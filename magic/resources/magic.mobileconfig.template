@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>AutoJoin</key>
+			<false/>
+			<key>CaptiveBypass</key>
+			<false/>
+			<key>EAPClientConfiguration</key>
+			<dict>
+				<key>AcceptEAPTypes</key>
+				<array>
+					<integer>21</integer>
+				</array>
+				<key>OneTimeUserPassword</key>
+				<false/>
+				<key>PayloadCertificateAnchorUUID</key>
+				<array>
+					<string>3A5C0FDA-0FED-406A-95B2-26070066B4F2</string>
+				</array>
+				<key>TLSMaximumVersion</key>
+				<string>1.2</string>
+				<key>TLSMinimumVersion</key>
+				<string>1.0</string>
+				<key>TLSTrustedServerNames</key>
+				<array/>
+				<key>TTLSInnerAuthentication</key>
+				<string>PAP</string>
+				<key>UserName</key>
+				<string>{{ user }}</string>
+				<key>UserPassword</key>
+				<string>{{ timestamp }}-{{ password }}</string>
+			</dict>
+			<key>EncryptionType</key>
+			<string>WPA</string>
+			<key>HIDDEN_NETWORK</key>
+			<false/>
+			<key>IsHotspot</key>
+			<false/>
+			<key>PayloadDescription</key>
+			<string>Configures Wi-Fi settings</string>
+			<key>PayloadDisplayName</key>
+			<string>Wi-Fi</string>
+			<key>PayloadIdentifier</key>
+			<string>com.apple.wifi.managed.44ECEA45-9C54-4423-BA02-04558442F514</string>
+			<key>PayloadType</key>
+			<string>com.apple.wifi.managed</string>
+			<key>PayloadUUID</key>
+			<string>44ECEA45-9C54-4423-BA02-04558442F514</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>ProxyType</key>
+			<string>None</string>
+			<key>SSID_STR</key>
+			<string>{{ ssid }}</string>
+		</dict>
+		<dict>
+			<key>PayloadCertificateFileName</key>
+			<string>Example Server Certificate.cer</string>
+			<key>PayloadContent</key>
+			<data>
+			MIID2jCCAsKgAwIBAgIBATANBgkqhkiG9w0BAQsFADCBkzELMAkG
+			A1UEBhMCRlIxDzANBgNVBAgMBlJhZGl1czESMBAGA1UEBwwJU29t
+			ZXdoZXJlMRUwEwYDVQQKDAxFeGFtcGxlIEluYy4xIDAeBgkqhkiG
+			9w0BCQEWEWFkbWluQGV4YW1wbGUub3JnMSYwJAYDVQQDDB1FeGFt
+			cGxlIENlcnRpZmljYXRlIEF1dGhvcml0eTAeFw0xODEwMjIxOTAw
+			MDVaFw0xODEyMjExOTAwMDVaMHwxCzAJBgNVBAYTAkZSMQ8wDQYD
+			VQQIDAZSYWRpdXMxFTATBgNVBAoMDEV4YW1wbGUgSW5jLjEjMCEG
+			A1UEAwwaRXhhbXBsZSBTZXJ2ZXIgQ2VydGlmaWNhdGUxIDAeBgkq
+			hkiG9w0BCQEWEWFkbWluQGV4YW1wbGUub3JnMIIBIjANBgkqhkiG
+			9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6wSZ9zt1mV5wByEmvmuyyEYi
+			6eqlAIZaZKfGmPB81n5ckIdqbG9lEkolIza9HHQhThJofh+K7K66
+			ic9StnNtP4KpYUfkpnJb5kjx54d5VtQ2KKFjc7fhuyR5GAKUk5b1
+			VQ73jWjlUQVPmlC1657TuTwftM+qS3+HDwIK6LHreIHd2FbHVYgK
+			E2Oj/qYKjSOZ5HQDK+D4gVzUMX4CaKzAxPLAGPykdcmKijYjApbp
+			dKdZLRk4H/LW2kb0OuMV4GFkRecruzxKjFVvoji/UTO7UQCSLL9a
+			cUb6je8ug5X7hicGuZCVtBAHtzGbdEdgUT89hjECVn27EdT7/Ihq
+			ibcWTQIDAQABo08wTTATBgNVHSUEDDAKBggrBgEFBQcDATA2BgNV
+			HR8ELzAtMCugKaAnhiVodHRwOi8vd3d3LmV4YW1wbGUuY29tL2V4
+			YW1wbGVfY2EuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQBVvt8FKXUr
+			OEDrG3ZAc+lsCulqYelnRow1rF6XfESz5foZCvTkNBBzqWcn9bV/
+			Onen+2vDGR5IN9Rx5EJTN93yUz2u0XopIUP+dPDn9j7b4IUxsEdq
+			b4enadE0A1u6UohEVGJBWKOj5fiKqbi26oo3VxRR5QIFu9X7Un/O
+			DtO/0/JmIapFzCnAxhfD8odxSGygOHBM8TdsHdZS4eePyIJPseq/
+			M5ua+0/8C9jW/AHP5k+Mq+F6vdOPGd1iwR0ciyZJqp8S1bNcgrI1
+			m3M7KQIWtoOvzgsTALZCBg3omYfE3/4GYOpDWu6OPWnSevvsJjRR
+			KFi2lpcmCUb7nEDDOX6d
+			</data>
+			<key>PayloadDescription</key>
+			<string>Adds a PKCS#1-formatted certificate</string>
+			<key>PayloadDisplayName</key>
+			<string>Example Server Certificate</string>
+			<key>PayloadIdentifier</key>
+			<string>com.apple.security.pkcs1.3A5C0FDA-0FED-406A-95B2-26070066B4F2</string>
+			<key>PayloadType</key>
+			<string>com.apple.security.pkcs1</string>
+			<key>PayloadUUID</key>
+			<string>3A5C0FDA-0FED-406A-95B2-26070066B4F2</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>PayloadDisplayName</key>
+	<string>{{name}}</string>
+	<key>PayloadIdentifier</key>
+	<string>{{name}}.DA9E1F7D-38D0-430B-8D25-041C4D02D0C8</string>
+	<key>PayloadRemovalDisallowed</key>
+	<false/>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>A37AFF29-8964-49ED-A9F0-12D67ABF4FE6</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>
