@@ -27,6 +27,10 @@ class AccountManager:
                     {
                         "name": "Enter existing test account using your test private key.",
                         "value": "existing_account"
+                    },
+                    {
+                        "name": "Exit Magic CLI",
+                        "value": "graceful_exit"
                     }
                 ]
             }, {
@@ -36,20 +40,30 @@ class AccountManager:
                 'message': 'Enter private key'
             }])
 
-        if answers['onboard_account_choice'] == "new_account":
-            account = generate_account()
-            self.pubkey = account.pubkey.lower()
-            self.address = account.address.lower()
-            self.privkey = account.privkey.lower()
-            log("Your new public key: %s" % self.pubkey, "blue")
-            log("Your new address: %s" % self.address, "blue")
-            log("Your new private key: %s" % self.privkey, "blue")
+        try:
 
-        if answers['onboard_account_choice'] == "existing_account":
-            self.privkey = answers['eth_privkey']
-            self.pubkey = "0x" + get_pub_from_privkey(self.privkey).lower()
+            if answers['onboard_account_choice'] == "new_account":
+                account = generate_account()
+                self.pubkey = account.pubkey.lower()
+                self.address = account.address.lower()
+                self.privkey = account.privkey.lower()
+                log("Your new public key: %s" % self.pubkey, "blue")
+                log("Your new address: %s" % self.address, "blue")
+                log("Your new private key: %s" % self.privkey, "blue")
 
-        self.onboarded = True
+            if answers['onboard_account_choice'] == "existing_account":
+                self.privkey = answers['eth_privkey']
+                self.pubkey = "0x" + get_pub_from_privkey(self.privkey).lower()
+
+            if answers['onboard_account_choice'] == "graceful_exit":
+                log('Goodbye!', 'green')
+                exit()
+
+            self.onboarded = True
+
+        except KeyboardInterrupt:
+            log('Goodbye!', 'green')
+            exit()
 
     def setup_8021x_creds(self, ssid):
         has_creds = self.wireless.has_8021x_creds(ssid, self.pubkey, self.privkey)
