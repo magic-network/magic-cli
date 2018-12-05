@@ -3,6 +3,7 @@
 *$py.class
 __pycache__/
 *.egg-info/
+.idea/
 build
 dist
 github
