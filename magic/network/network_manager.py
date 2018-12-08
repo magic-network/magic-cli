@@ -1,4 +1,7 @@
+import sys
+
 from yaspin import yaspin
+
 from magic.util.log import log
 from magic.wireless.wireless import Wireless
 from magic.util.prompt import get_prompt
@@ -13,6 +16,10 @@ class NetworkManager:
     def get_custom_network_ssid(self):
         with yaspin():
             ssids = self.wireless.scan()
+
+        if not ssids:
+            log("Could not find any magic ssids!", "red")
+            sys.exit(1)
 
         answers = get_prompt([
             {
