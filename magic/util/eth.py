@@ -1,9 +1,12 @@
 import ecdsa
 import sha3
+import six
 
 from eth_utils.address import decode_hex
 from eth_keys import keys
 
+def encode_hex_string(data):
+    return ''.join('{:02X}'.format(x) for x in six.iterbytes(data))
 
 # Generate a new ethereum account
 def generate_account():
@@ -15,9 +18,9 @@ def generate_account():
     address = keccak.hexdigest()[24:]
 
     return type('obj', (object,), {
-        'pubkey': pub.encode('hex'),
+        'pubkey': encode_hex_string(pub),
         'address': checksum_encode(address),
-        'privkey': priv.to_string().encode('hex')
+        'privkey': encode_hex_string(priv.to_string())
     })
 
 
