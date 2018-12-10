@@ -1,5 +1,5 @@
 # Magic CLI
-The Magic CLI can be installed in 2 easy steps.
+The Magic CLI can be installed in 3 easy steps.
 
 ## Requirements
 - macOS 10.6 or higher
@@ -10,9 +10,13 @@ The Magic CLI can be installed in 2 easy steps.
 ```
 git clone https://github.com/magic-network/magic-cli.git
 ```
-2. Install the CLI:
+2. Change into the cloned directory:
 ```
-pip install magic-cli
+cd magic-cli
+```
+3. Install the CLI:
+```
+pip install .
 ````
 
 ## Running CLI
