@@ -1,6 +1,24 @@
-# Setup
-1. Install Python 2 (if you're on MacOS it's already installed) or Python 3
-1. Setup virtual environment if you wish and activate it
-1. cd into magic-cli directory
-1. Run `pip install .` (`pip install -e .` if you're developing and want to use the local source code)
-1. Run `magic-cli` to get started
+# Magic CLI
+The Magic CLI can be installed in 2 easy steps.
+
+## Requirements
+- macOS 10.6 or higher
+- Python 2.7 or higher
+
+## Installation
+1. Clone the repository from GitHub:
+```
+git clone https://github.com/magic-network/magic-cli.git
+```
+2. Install the CLI:
+```
+pip install magic-cli
+````
+
+## Running CLI
+Once installed, you can start the CLI with:
+```
+magic-cli
+```
+
+For more information, [visit our Quickstart guide →](https://magic-network.github.io/magic-cli/quick-start/installing-cli.html)
