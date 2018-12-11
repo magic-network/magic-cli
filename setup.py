@@ -25,6 +25,7 @@ setup(
         'ecdsa==0.13',
         'eth-keys==0.1.0b4',
         'eth-utils==0.8.1',
+        'future==0.17.1',
         'Jinja2==2.10.0',
         'prompt-toolkit==1.0.14',
         'pyfiglet==0.7.5',
