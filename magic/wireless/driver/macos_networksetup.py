@@ -97,7 +97,11 @@ class MacOSNetworksetup(WirelessDriver):
     # Return a list of networks
     def scan_networks(self):
         ssids = []
-        scan_results = self.wifi.interface.scanForNetworksWithName_includeHidden_error_(None, True, None)
+        try:
+            scan_results = self.wifi.interface.scanForNetworksWithName_includeHidden_error_(None, True, None)
+        except AttributeError:
+            # The includeHidden parameter is only available on OSX 10.13+
+            scan_results = self.wifi.interface.scanForNetworksWithName_error_(None, None)
 
         for network in scan_results[0]:
             ssid = network.ssid()
