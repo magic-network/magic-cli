@@ -1,3 +1,4 @@
+from builtins import bytes
 import ecdsa
 import sha3
 import six
@@ -46,7 +47,7 @@ def get_pub_from_privkey(private_key):
 
 def sign(message, private_key):
     # Hash the agreed upon message
-    message_hash = sha3.keccak_256(bytes(message)).digest()
+    message_hash = sha3.keccak_256(bytes(message, 'utf8')).digest()
     # Convert private key to binary
     priv_key = decode_hex(private_key)
     # Sign with private key
