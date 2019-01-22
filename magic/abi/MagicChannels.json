@@ -1,0 +1,240 @@
+{
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "registerEnabler",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "enabler",
+          "type": "address"
+        }
+      ],
+      "name": "registeredEnabler",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "enabler",
+          "type": "address"
+        },
+        {
+          "name": "deposit",
+          "type": "uint256"
+        }
+      ],
+      "name": "createChannel",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "enabler",
+          "type": "address"
+        }
+      ],
+      "name": "myUserBalance",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner_addr",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "enabler",
+          "type": "address"
+        },
+        {
+          "name": "topupAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "topUp",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "token",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "gateways",
+          "type": "address[]"
+        },
+        {
+          "name": "payouts",
+          "type": "uint256[]"
+        },
+        {
+          "name": "payers",
+          "type": "address[]"
+        },
+        {
+          "name": "payments",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "dispensePayments",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "name": "token_addr",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "enabler",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "deposit",
+          "type": "uint256"
+        }
+      ],
+      "name": "ChannelCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "enabler",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "topupAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "ChannelToppedUp",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "enabler",
+          "type": "address"
+        }
+      ],
+      "name": "EnablerRegistered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "enabler",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "gateways",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "name": "payouts",
+          "type": "uint256[]"
+        },
+        {
+          "indexed": false,
+          "name": "payers",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "name": "payments",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "PaymentsDispensed",
+      "type": "event"
+    }
+  ]
+}

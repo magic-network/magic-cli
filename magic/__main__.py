@@ -13,6 +13,7 @@ import click
 from magic.daemon.network_monitor import NetworkMonitor
 from magic.account.account_manager import AccountManager
 from magic.network.network_manager import NetworkManager
+from magic.account.channel_manager import ChannelManager
 from magic.util.log import log
 
 DEV = True
@@ -42,6 +43,7 @@ def sighandler(signum, frame):
 
 @click.command()
 def main():
+
     """
     CLI for connecting to the Magic Network
     """
@@ -52,11 +54,11 @@ def main():
     print("\t")
 
     network_manager = NetworkManager()
-    account_manager = AccountManager()
+    channel_manager = ChannelManager()
+    account_manager = AccountManager(channel_manager)
     network_daemon = NetworkMonitor(10)
 
-    # Setup initial user account data
-    account_manager.get_critical_info()
+    account_manager.get_user()
 
     # Let developers choose the ssid of the magic network they'd like to connect to.
     if DEV:

@@ -4,16 +4,18 @@ from magic.util.prompt import get_prompt
 from magic.util.eth import generate_account, get_pub_from_privkey, sign
 from magic.wireless.wireless import Wireless
 
-
 class AccountManager:
-    def __init__(self):
+    def __init__(self, channel_manager):
+
+        self.channel_manager = channel_manager
         self.onboarded = False
         self.pubkey = None
         self.address = None
         self.privkey = None
         self.wireless = Wireless()
 
-    def get_critical_info(self):
+    def get_user(self):
+
         answers = get_prompt([
             {
                 'type': 'list',
@@ -43,17 +45,9 @@ class AccountManager:
         try:
 
             if answers['onboard_account_choice'] == "new_account":
-                account = generate_account()
-                self.pubkey = account.pubkey.lower()
-                self.address = account.address.lower()
-                self.privkey = account.privkey.lower()
-                log("Your new public key: %s" % self.pubkey, "blue")
-                log("Your new address: %s" % self.address, "blue")
-                log("Your new private key: %s" % self.privkey, "blue")
-
+                self.create_eth_account()
             if answers['onboard_account_choice'] == "existing_account":
-                self.privkey = answers['eth_privkey']
-                self.pubkey = "0x" + get_pub_from_privkey(self.privkey).lower()
+                self.get_eth_account(answers['eth_privkey'])
 
             if answers['onboard_account_choice'] == "graceful_exit":
                 log('Goodbye!', 'green')
@@ -61,9 +55,32 @@ class AccountManager:
 
             self.onboarded = True
 
-        except KeyboardInterrupt:
+        except KeyError:
             log('Goodbye!', 'green')
             exit()
+
+    def get_eth_account(self, priv_key):
+
+        self.privkey = priv_key
+        self.pubkey = "0x" + get_pub_from_privkey(priv_key).lower()
+
+        log("Address: %s" % self.address, "blue")
+        log("Private key: %s" % self.privkey, "blue")
+
+    def create_eth_account(self):
+
+        account = generate_account()
+
+        self.pubkey = account.pubkey.lower()
+        self.address = account.address.lower()
+        self.privkey = account.privkey.lower()
+
+        log("Address: %s" % self.address, "blue")
+        log("Private key: %s" % self.privkey, "blue")
+
+        self.channel_manager.create_process(self.address, self.privkey, 100000)
+
+
 
     def setup_8021x_creds(self, ssid):
         has_creds = self.wireless.has_8021x_creds(ssid, self.pubkey, self.privkey)
