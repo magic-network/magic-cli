@@ -1,14 +1,13 @@
 import time
 from magic.util.log import log
 from magic.util.prompt import get_prompt
-from magic.util.eth import generate_account, get_pub_from_privkey, sign
+from magic.util.eth import generate_account, sign
 from magic.wireless.wireless import Wireless
 
 
 class AccountManager:
     def __init__(self):
         self.onboarded = False
-        self.pubkey = None
         self.address = None
         self.privkey = None
         self.wireless = Wireless()
@@ -44,16 +43,13 @@ class AccountManager:
 
             if answers['onboard_account_choice'] == "new_account":
                 account = generate_account()
-                self.pubkey = account.pubkey.lower()
-                self.address = account.address.lower()
-                self.privkey = account.privkey.lower()
-                log("Your new public key: %s" % self.pubkey, "blue")
+                self.address = account.address
+                self.privkey = account.privkey
                 log("Your new address: %s" % self.address, "blue")
                 log("Your new private key: %s" % self.privkey, "blue")
 
             if answers['onboard_account_choice'] == "existing_account":
                 self.privkey = answers['eth_privkey']
-                self.pubkey = "0x" + get_pub_from_privkey(self.privkey).lower()
 
             if answers['onboard_account_choice'] == "graceful_exit":
                 log('Goodbye!', 'green')
@@ -66,14 +62,14 @@ class AccountManager:
             exit()
 
     def setup_8021x_creds(self, ssid):
-        has_creds = self.wireless.has_8021x_creds(ssid, self.pubkey, self.privkey)
+        has_creds = self.wireless.has_8021x_creds(ssid, self.address, self.privkey)
 
         if has_creds is False:
             timestamp = str(int(time.time()))
 
             self.wireless.install_8021x_creds(
                 ssid,
-                self.pubkey,
+                self.address,
                 sign("auth_" + timestamp, self.privkey),
                 timestamp
             )

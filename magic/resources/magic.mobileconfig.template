@@ -30,9 +30,9 @@
 				<key>TTLSInnerAuthentication</key>
 				<string>PAP</string>
 				<key>UserName</key>
-				<string>{{ user }}</string>
+				<string>{{ address }}</string>
 				<key>UserPassword</key>
-				<string>{{ timestamp }}-{{ password }}</string>
+				<string>{{ timestamp }}-{{ signature }}</string>
 			</dict>
 			<key>EncryptionType</key>
 			<string>WPA</string>
@@ -59,35 +59,30 @@
 		</dict>
 		<dict>
 			<key>PayloadCertificateFileName</key>
-			<string>Example Server Certificate.cer</string>
+			<string>something.cer</string>
 			<key>PayloadContent</key>
 			<data>
-			MIID2jCCAsKgAwIBAgIBATANBgkqhkiG9w0BAQsFADCBkzELMAkG
-			A1UEBhMCRlIxDzANBgNVBAgMBlJhZGl1czESMBAGA1UEBwwJU29t
-			ZXdoZXJlMRUwEwYDVQQKDAxFeGFtcGxlIEluYy4xIDAeBgkqhkiG
-			9w0BCQEWEWFkbWluQGV4YW1wbGUub3JnMSYwJAYDVQQDDB1FeGFt
-			cGxlIENlcnRpZmljYXRlIEF1dGhvcml0eTAeFw0xODEwMjIxOTAw
-			MDVaFw0xODEyMjExOTAwMDVaMHwxCzAJBgNVBAYTAkZSMQ8wDQYD
-			VQQIDAZSYWRpdXMxFTATBgNVBAoMDEV4YW1wbGUgSW5jLjEjMCEG
-			A1UEAwwaRXhhbXBsZSBTZXJ2ZXIgQ2VydGlmaWNhdGUxIDAeBgkq
-			hkiG9w0BCQEWEWFkbWluQGV4YW1wbGUub3JnMIIBIjANBgkqhkiG
-			9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6wSZ9zt1mV5wByEmvmuyyEYi
-			6eqlAIZaZKfGmPB81n5ckIdqbG9lEkolIza9HHQhThJofh+K7K66
-			ic9StnNtP4KpYUfkpnJb5kjx54d5VtQ2KKFjc7fhuyR5GAKUk5b1
-			VQ73jWjlUQVPmlC1657TuTwftM+qS3+HDwIK6LHreIHd2FbHVYgK
-			E2Oj/qYKjSOZ5HQDK+D4gVzUMX4CaKzAxPLAGPykdcmKijYjApbp
-			dKdZLRk4H/LW2kb0OuMV4GFkRecruzxKjFVvoji/UTO7UQCSLL9a
-			cUb6je8ug5X7hicGuZCVtBAHtzGbdEdgUT89hjECVn27EdT7/Ihq
-			ibcWTQIDAQABo08wTTATBgNVHSUEDDAKBggrBgEFBQcDATA2BgNV
-			HR8ELzAtMCugKaAnhiVodHRwOi8vd3d3LmV4YW1wbGUuY29tL2V4
-			YW1wbGVfY2EuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQBVvt8FKXUr
-			OEDrG3ZAc+lsCulqYelnRow1rF6XfESz5foZCvTkNBBzqWcn9bV/
-			Onen+2vDGR5IN9Rx5EJTN93yUz2u0XopIUP+dPDn9j7b4IUxsEdq
-			b4enadE0A1u6UohEVGJBWKOj5fiKqbi26oo3VxRR5QIFu9X7Un/O
-			DtO/0/JmIapFzCnAxhfD8odxSGygOHBM8TdsHdZS4eePyIJPseq/
-			M5ua+0/8C9jW/AHP5k+Mq+F6vdOPGd1iwR0ciyZJqp8S1bNcgrI1
-			m3M7KQIWtoOvzgsTALZCBg3omYfE3/4GYOpDWu6OPWnSevvsJjRR
-			KFi2lpcmCUb7nEDDOX6d
+			MIIDwTCCAqmgAwIBAgIBATANBgkqhkiG9w0BAQsFADCBjzELMAkGA1UEBhMCVVMx
+            CzAJBgNVBAgMAklMMRAwDgYDVQQHDAdDaGljYWdvMREwDwYDVQQKDAhIb2xvZ3Jh
+            bTEgMB4GCSqGSIb3DQEJARYRYWRtaW5AZXhhbXBsZS5vcmcxLDAqBgNVBAMMI0V4
+            YW1wbGUgTWFnaWMgQ2VydGlmaWNhdGUgQXV0aG9yaXR5MB4XDTE4MTEwMTE5MDUw
+            OFoXDTE4MTIzMTE5MDUwOFowZzELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAklMMREw
+            DwYDVQQKDAhIb2xvZ3JhbTESMBAGA1UEAwwJc29tZXRoaW5nMSQwIgYJKoZIhvcN
+            AQkBFhV3ZWJtYXN0ZXJAaG9sb2dyYW0uaW8wggEiMA0GCSqGSIb3DQEBAQUAA4IB
+            DwAwggEKAoIBAQC7UsOVOrMRNl5IXCDd9ceLd+1/BRuOPQtVgdrBV/AlJUZb9VUC
+            YAF57o/nykuFdO3j63TL27Paa5HUpS7vsUhwqruLNDFYNZJLT1hykzLKTn2ulHLc
+            Y9ap5EsOq9MQIuk9vlnrQsE+oBSOPO9jQOGgeugYEOtK01HcAh7OGXbzNIL5htWz
+            YTqGmoRahO9lNHL7r43xLB3u8PSlYA4BZmOsKAKly4LsUWXimBB4AoEQsL50WJxd
+            HMsy5MukpU22qGIyMc8ET7eAdZBW+UPZb3GTEsgaOVCuTOCvtxXXaG4EC49YiNCo
+            hnrUY5+TcL65DhEHjA/P8E5ClphhiIb60XHNAgMBAAGjTzBNMBMGA1UdJQQMMAoG
+            CCsGAQUFBwMBMDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly93d3cuZXhhbXBsZS5j
+            b20vZXhhbXBsZV9jYS5jcmwwDQYJKoZIhvcNAQELBQADggEBACPaL7u1hlBkaoVm
+            apUwWrratIyxaVY1tTh9amggOV68esIdbkPf9eCYoiQZprMtPhSmmxmBMmyLZcct
+            eYi54bSxROMYL1LCz0DqrgVg3cF404EbSs6SwI0Bs1ab1HbryXMdO8Kx2cGEmkB1
+            qn4NpyjCuCtdV7/FUW9EEps6G2t88u+QnkvmrGwLay+MiNJPoFDxagr9v3yW+wEw
+            93JZu+cpCWCC/SpHOUZMmtncsApgANjaCL2aE2CIVx8xtm5+x7NWELqbE35Y9YhW
+            fnT+p5gJKhe7bGHd8LFS/RWpC1Xdvmhe1qlfVPmzYS8gD4GUH4puON35XjuR9RWJ
+            ab7gjEc=
 			</data>
 			<key>PayloadDescription</key>
 			<string>Adds a PKCS#1-formatted certificate</string>

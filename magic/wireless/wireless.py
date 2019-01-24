@@ -29,13 +29,13 @@ class Wireless:
 
         raise Exception('Unable to find compatible wireless driver.')
 
-    # Check for existence of 8021x creds installed already
-    def has_8021x_creds(self, ssid, username, password):
-        return self._driver.has_8021x_creds(ssid, username, password)
+    # Check for existence of 8021x creds instalsled already
+    def has_8021x_creds(self, ssid, address, signature):
+        return self._driver.has_8021x_creds(ssid, address, signature)
 
     # Install proper creds for 802.1x connection
-    def install_8021x_creds(self, ssid, username, password, timestamp):
-        return self._driver.install_8021x_creds(ssid, username, password, timestamp)
+    def install_8021x_creds(self, ssid, address, signature, timestamp):
+        return self._driver.install_8021x_creds(ssid, address, signature, timestamp)
 
     # Connect to a network by SSID
     def connect(self, ssid):

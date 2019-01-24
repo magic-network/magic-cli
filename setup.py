@@ -20,11 +20,10 @@ setup(
     },
 
     install_requires=[
+        'ethereum==2.3.2',
+        'web3==4.8.1',
         'Click==7.0',
         'colorama==0.4.0',
-        'ecdsa==0.13',
-        'eth-keys==0.1.0b4',
-        'eth-utils==0.8.1',
         'future==0.17.1',
         'Jinja2==2.10.0',
         'prompt-toolkit==1.0.14',
@@ -32,7 +31,6 @@ setup(
         'Pygments==2.2.0',
         'PyInquirer==1.0.3',
         'pyobjc==5.1.1',
-        'pysha3==1.0.2',
         'six==1.11.0',
         'termcolor==1.1.0',
         'yaspin==0.14.0'
