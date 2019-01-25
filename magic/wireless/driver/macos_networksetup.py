@@ -25,8 +25,8 @@ class MacOSNetworksetup(WirelessDriver):
     def get_mobileconfig_name(ssid, username):
         return "%s-%s" % (ssid, username)
 
-    def has_8021x_creds(self, ssid, username, password):
-        mobileconfig_name = self.get_mobileconfig_name(ssid, username)
+    def has_8021x_creds(self, ssid, address, signature):
+        mobileconfig_name = self.get_mobileconfig_name(ssid, address)
         command = '''profiles -Lv | grep "name: %s" -4 | awk -F": " "/attribute: profileIdentifier/{print $NF}" ''' % \
                   mobileconfig_name
         response = cmd(command)
@@ -36,12 +36,15 @@ class MacOSNetworksetup(WirelessDriver):
         else:
             return True
 
-    def install_8021x_creds(self, ssid, username, password, timestamp):
+    def install_8021x_creds(self, ssid, address, signature, timestamp):
         template_env = Environment(loader=FileSystemLoader(RESOURCES_PATH))
-        mobileconfig_name = self.get_mobileconfig_name(ssid, username)
+        mobileconfig_name = self.get_mobileconfig_name(ssid, address)
+
+        print("python radiusauth.py -s /tmp/magicsock %s %s-%s" % (address, timestamp, signature))
+
         rendered_mobileconfig = template_env.get_template('magic.mobileconfig.template').render(
-            user=username,
-            password=password,
+            address=address,
+            signature=signature,
             ssid=ssid,
             name=mobileconfig_name,
             timestamp=timestamp
