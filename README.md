@@ -3,7 +3,7 @@ The Magic CLI can be installed in 3 easy steps.
 
 ## Requirements
 - macOS 10.6 or higher
-- Python 2.7 or higher
+- Python >= 3.5.3, < 4
 
 ## Installation
 1. Clone the repository from GitHub:

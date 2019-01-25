@@ -35,7 +35,7 @@ setup(
         'termcolor==1.1.0',
         'yaspin==0.14.0'
     ],
-
+    python_requires='>=3.6,<4',
     classifiers=[
         'Development Status :: 1 - Beta',
         'Intended Audience :: End Users/Desktop',

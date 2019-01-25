@@ -77,7 +77,7 @@ class MacOSNetworksetup(WirelessDriver):
         )
 
         # Remove generated mobileconfig
-        remove("%s/%s" % (RESOURCES_PATH, mobileconfig_filename))
+        # remove("%s/%s" % (RESOURCES_PATH, mobileconfig_filename))
 
         if not response.returncode == 0:
             log("An error occured: %s" % response.stdout, "red")

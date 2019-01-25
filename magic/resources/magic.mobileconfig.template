@@ -65,29 +65,29 @@
 			MIIDwTCCAqmgAwIBAgIBATANBgkqhkiG9w0BAQsFADCBjzELMAkGA1UEBhMCVVMx
             CzAJBgNVBAgMAklMMRAwDgYDVQQHDAdDaGljYWdvMREwDwYDVQQKDAhIb2xvZ3Jh
             bTEgMB4GCSqGSIb3DQEJARYRYWRtaW5AZXhhbXBsZS5vcmcxLDAqBgNVBAMMI0V4
-            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
+            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
-            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
+            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
-            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
-            ab7gjEc=
+            b20vZXhhbXBsZV9jYS5jcmwwDQYJKoZIhvcNAQELBQADggEBAAafDofsbg312GW5
+            s9cGmfjwDXiDAD2zaV1FmV3IfOCylOj4TuSA2n8CS48vCkuBtwMVs02az7fpfwRV
+            KnLO130BWbpE4u+sG+SWBP3WTxSXDiu4phjdmI3Hzl24a0M6bWgNxB9XS0fnsrhc
+            uOwfATbZVzJmWHZrj+qKk69bPDH8TCcEShpAcCYY8b573SalVuO9RI7yDKY6V05g
+            iviGeBgWHawjHYrTVCw4XFz3G1Ekzh7Z/ypXvD+uk0C+IDcfNy7kOUiHAJhIGelP
+            oY7/8paEVya/Ywe0agmNoWLFFRJUDD254ynx38tY9HAHzHYc+sWXhKhxCRYWHPIM
+            Uf5fAa8=
 			</data>
 			<key>PayloadDescription</key>
 			<string>Adds a PKCS#1-formatted certificate</string>
 			<key>PayloadDisplayName</key>
-			<string>Example Server Certificate</string>
+			<string>Example Magic Certificate Authority (bobsyouruncle)</string>
 			<key>PayloadIdentifier</key>
 			<string>com.apple.security.pkcs1.3A5C0FDA-0FED-406A-95B2-26070066B4F2</string>
 			<key>PayloadType</key>
