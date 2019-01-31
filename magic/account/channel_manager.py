@@ -1,4 +1,5 @@
 from web3 import Web3
+import os
 import requests
 import json
 
@@ -6,12 +7,20 @@ class ChannelManager:
 
     def __init__(self):
         self.web3_provider = Web3.HTTPProvider("https://rinkeby.infura.io/50686e66f0c143dc968ee9ab73a726a8")
+        self.web3 = Web3(self.web3_provider)
         self.load_contracts()
 
     def load_contracts(self):
 
-        token_abi_path = ""
-        faucet_abi_path = ""
+        this_dir, this_filename = os.path.split(__file__)
+
+        token_abi_path = os.path.join(this_dir, "..", "resources", "MagicToken.json")
+        faucet_abi_path = os.path.join(this_dir, "..", "resources", "MagicTokenFaucet.json")
+        channel_abi_path = os.path.join(this_dir, "..", "resources", "MagicChannels.json")
+
+        token_addr = Web3.toChecksumAddress("0xc3cbfd0d0f583987ea43d92f7bc2624052ffd6f5")
+        faucet_addr = Web3.toChecksumAddress("0x7ca9360a59737e5bf3611b1877db8abe292db033")
+        channel_addr = Web3.toChecksumAddress("0x7ca9360a59737e5bf3611b1877db8abe292db033")
 
         with open(token_abi_path) as f:
             token_abi = json.load(f)
@@ -19,21 +28,28 @@ class ChannelManager:
         with open(faucet_abi_path) as f:
             faucet_abi = json.load(f)
 
-        self.token_contract = self.web3.eth.contract(address=self.mgc_contract_address, abi=token_abi["abi"])
-        self.faucet_contract = self.web3.eth.contract(address=self.mgc_contract_address, abi=faucet_abi["abi"])
+        with open(channel_abi_path) as f:
+            channel_abi = json.load(f)
 
-    def get_airdropped(self, address, priv_key):
+        self.token_contract = self.web3.eth.contract(address=token_addr, abi=token_abi["abi"])
+        self.faucet_contract = self.web3.eth.contract(address=faucet_addr, abi=faucet_abi["abi"])
+        self.channel_contract = self.web3.eth.contract(address=channel_addr, abi=channel_abi["abi"])
 
-        nonce = self.app.web3.eth.getTransactionCount(address)
+    def get_airdropped(self, _address, priv_key):
+
+        address = Web3.toChecksumAddress(_address)
+
+        # What needs to happen here?
+        nonce = self.web3.eth.getTransactionCount(address)
 
         request_tx = self.faucet_contract.functions.request().buildTransaction({
             'chainId': 4,
             'gas': 70000,
-            'gasPrice': self.app.web3.toWei('1', 'gwei'),
+            'gasPrice': self.web3.toWei('1', 'gwei'),
             'nonce': nonce
         })
 
-        signed_request_tx = self.app.web3.eth.account.signTransaction(request_tx, private_key=priv_key)
+        signed_request_tx = self.web3.eth.account.signTransaction(request_tx, private_key=priv_key)
 
         headers = {
             'user_addr': address,
