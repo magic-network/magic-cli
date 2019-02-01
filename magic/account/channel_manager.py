@@ -2,10 +2,12 @@ from web3 import Web3
 import os
 import requests
 import json
+import sha3
 
 class ChannelManager:
 
     def __init__(self):
+
         self.web3_provider = Web3.HTTPProvider("https://rinkeby.infura.io/50686e66f0c143dc968ee9ab73a726a8")
         self.web3 = Web3(self.web3_provider)
         self.load_contracts()
@@ -35,35 +37,24 @@ class ChannelManager:
         self.faucet_contract = self.web3.eth.contract(address=faucet_addr, abi=faucet_abi["abi"])
         self.channel_contract = self.web3.eth.contract(address=channel_addr, abi=channel_abi["abi"])
 
-    def get_airdropped(self, _address, priv_key):
+    def get_airdropped(self, address, priv_key):
 
-        address = Web3.toChecksumAddress(_address)
-
-        # What needs to happen here?
-        nonce = self.web3.eth.getTransactionCount(address)
-
-        request_tx = self.faucet_contract.functions.request().buildTransaction({
-            'chainId': 4,
-            'gas': 70000,
-            'gasPrice': self.web3.toWei('1', 'gwei'),
-            'nonce': nonce
-        })
-
-        signed_request_tx = self.web3.eth.account.signTransaction(request_tx, private_key=priv_key)
-
-        headers = {
-            'user_addr': address,
-            'user_privkey': priv_key,
-            'Content-Type': 'application/json'
-        }
+        sig_msg = "it's me!"
+        sig_msg_hash = sha3(sig_msg)
+        sig = self.web3.eth.account.signHash(message_hash, private_key=private_key)
 
         body = {
-            "escrow": 10000
+            "address": address,
+            "sig": sig
         }
 
-        r = requests.post('http://127.0.0.1:5000/airdrop', headers=headers, data=json.dumps(body))
+        # r = requests.post('http://127.0.0.1:5000/airdrop', data=json.dumps(body))
 
+        # Poll here for those sweet sweet tokens.
         print(r.status_code)
+
+
+
 
     def approve_channel(self):
 
@@ -122,8 +113,8 @@ class ChannelManager:
     def create_process(self, address, priv_key, escrow):
 
         self.get_airdropped(address, priv_key)
-        self.approve_channel(address, priv_key)
-        self.create_channel(address, priv_key, escrow)
+        # self.approve_channel(address, priv_key)
+        # self.create_channel(address, priv_key, escrow)
 
         pass
 
