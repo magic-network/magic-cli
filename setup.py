@@ -1,4 +1,23 @@
 from setuptools import setup, find_packages
+import platform
+
+required_packages = [
+    'ethereum==2.3.2',
+    'web3==4.8.1',
+    'Click==7.0',
+    'colorama==0.4.0',
+    'future==0.17.1',
+    'Jinja2==2.10.0',
+    'prompt-toolkit==1.0.14',
+    'pyfiglet==0.7.5',
+    'Pygments==2.2.0',
+    'PyInquirer==1.0.3',
+    'six==1.11.0',
+    'termcolor==1.1.0',
+    'yaspin==0.14.0']
+
+if platform.system() != 'Linux':
+    required_packages.append('pyobjc==5.1.1')
 
 setup(
     name='magic-cli',
@@ -12,33 +31,13 @@ setup(
     url="https://magic.co",
     packages=find_packages(),
     package_data={'magic': ['resources/*']},
-    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
-
     entry_points={
         'console_scripts': [
             'magic-cli=magic.__main__:main'
         ]
     },
-
-    install_requires=[
-        'web3==4.8.1',
-        'requests=2.21.0',
-        'Click==7.0',
-        'colorama==0.4.0',
-        'ecdsa==0.13',
-        'future==0.17.1',
-        'Jinja2==2.10.0',
-        'prompt-toolkit==1.0.14',
-        'pyfiglet==0.7.5',
-        'Pygments==2.2.0',
-        'PyInquirer==1.0.3',
-        'pyobjc==5.1.1',
-        'pysha3==1.0.2',
-        'six==1.11.0',
-        'termcolor==1.1.0',
-        'yaspin==0.14.0'
-    ],
-
+    install_requires=required_packages,
+    python_requires='>=3.6,<4',
     classifiers=[
         'Development Status :: 1 - Beta',
         'Intended Audience :: End Users/Desktop',

@@ -1,4 +1,3 @@
-from magic.wireless.driver.macos_networksetup import MacOSNetworksetup
 from magic.util.log import log
 from magic.util.cmd import cmd
 
@@ -11,9 +10,13 @@ class Wireless:
         # Detect the platform's driver
         self._driver_name = self.detect_driver()
         if self._driver_name == 'networksetup':
+            from magic.wireless.driver.macos_networksetup import MacOSNetworksetup
             self._driver = MacOSNetworksetup()
+        elif self._driver_name == 'nmcli':
+            from magic.wireless.driver.linux_nmcli import LinuxNmcli
+            self._driver = LinuxNmcli()
         else:
-            # TODO: Windows and Linux support
+            # TODO: Windows support
             log("Your OS is not supported yet.", "red")
 
         # Raise an error if interface cannot be determined
@@ -26,16 +29,19 @@ class Wireless:
         response = cmd('which networksetup')
         if len(response.stdout) > 0 and 'not found' not in response.stdout:
             return 'networksetup'
-
+        # Linux
+        response = cmd('which nmcli')
+        if len(response.stdout) > 0 and 'not found' not in response.stdout:
+            return 'nmcli'
         raise Exception('Unable to find compatible wireless driver.')
 
-    # Check for existence of 8021x creds installed already
-    def has_8021x_creds(self, ssid, username, password):
-        return self._driver.has_8021x_creds(ssid, username, password)
+    # Check for existence of 8021x creds instalsled already
+    def has_8021x_creds(self, ssid, address, signature):
+        return self._driver.has_8021x_creds(ssid, address, signature)
 
     # Install proper creds for 802.1x connection
-    def install_8021x_creds(self, ssid, username, password, timestamp):
-        return self._driver.install_8021x_creds(ssid, username, password, timestamp)
+    def install_8021x_creds(self, ssid, address, signature, timestamp):
+        return self._driver.install_8021x_creds(ssid, address, signature, timestamp)
 
     # Connect to a network by SSID
     def connect(self, ssid):
