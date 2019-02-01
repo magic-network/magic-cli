@@ -2,7 +2,8 @@ from web3 import Web3
 import os
 import requests
 import json
-import sha3
+import time
+from magic.util.eth import sign
 
 class ChannelManager:
 
@@ -20,9 +21,10 @@ class ChannelManager:
         faucet_abi_path = os.path.join(this_dir, "..", "resources", "MagicTokenFaucet.json")
         channel_abi_path = os.path.join(this_dir, "..", "resources", "MagicChannels.json")
 
-        token_addr = Web3.toChecksumAddress("0xc3cbfd0d0f583987ea43d92f7bc2624052ffd6f5")
-        faucet_addr = Web3.toChecksumAddress("0x7ca9360a59737e5bf3611b1877db8abe292db033")
-        channel_addr = Web3.toChecksumAddress("0x7ca9360a59737e5bf3611b1877db8abe292db033")
+        self.token_addr = Web3.toChecksumAddress("0xc3cbfd0d0f583987ea43d92f7bc2624052ffd6f5")
+        self.faucet_addr = Web3.toChecksumAddress("0x7ca9360a59737e5bf3611b1877db8abe292db033")
+        self.channel_addr = Web3.toChecksumAddress("0x0df70c960542cf3bc879772fb84e24ea614024b5")
+        self.payment_enabler_addr = Web3.toChecksumAddress("0x18789511134a4c211C4a0E9661f868102C5DaBd7")
 
         with open(token_abi_path) as f:
             token_abi = json.load(f)
@@ -33,90 +35,94 @@ class ChannelManager:
         with open(channel_abi_path) as f:
             channel_abi = json.load(f)
 
-        self.token_contract = self.web3.eth.contract(address=token_addr, abi=token_abi["abi"])
-        self.faucet_contract = self.web3.eth.contract(address=faucet_addr, abi=faucet_abi["abi"])
-        self.channel_contract = self.web3.eth.contract(address=channel_addr, abi=channel_abi["abi"])
+        self.token_contract = self.web3.eth.contract(address=self.token_addr, abi=token_abi["abi"])
+        self.faucet_contract = self.web3.eth.contract(address=self.faucet_addr, abi=faucet_abi["abi"])
+        self.channel_contract = self.web3.eth.contract(address=self.channel_addr, abi=channel_abi["abi"])
 
     def get_airdropped(self, address, priv_key):
 
-        sig_msg = "it's me!"
-        sig_msg_hash = sha3(sig_msg)
-        sig = self.web3.eth.account.signHash(message_hash, private_key=private_key)
-
         body = {
             "address": address,
-            "sig": sig
+            "sig": sign("it's me!", priv_key)
         }
 
-        # r = requests.post('http://127.0.0.1:5000/airdrop', data=json.dumps(body))
+        print("Airdropping...")
+        r = requests.post('http://127.0.0.1:5000/airdrop', data=json.dumps(body))
+
+        has_tokens = False
+        has_eth = False
+
+        while not has_eth:
+            eth_balance = self.web3.eth.getBalance(address)
+            has_eth = eth_balance > 0
+            if not has_eth:
+                print("Still airdropping...")
+                time.sleep(2)
 
         # Poll here for those sweet sweet tokens.
-        print(r.status_code)
+        while not has_tokens:
+            mgc_tokens = self.token_contract.functions.balanceOf(address).call()
+            has_tokens = mgc_tokens > 0
+            if not has_tokens:
+                print("Still airdropping...")
+                time.sleep(2)
 
+        print("Airdrop complete: %s ETH, %s MGC" % (eth_balance, mgc_tokens))
 
+    def approve_channel(self, address, priv_key, escrow):
+        print("Approving creation of new channel...")
 
-
-    def approve_channel(self):
-
-        nonce = self.app.web3.eth.getTransactionCount(address)
-
-        request_tx = self.token_contract.functions.request().buildTransaction({
-            'chainId': 4,
+        approve_tx = self.token_contract.functions.approve(self.channel_addr, escrow).buildTransaction({
+            'chainId': 4,   # Rinkeby for now.
             'gas': 70000,
-            'gasPrice': self.app.web3.toWei('1', 'gwei'),
-            'nonce': nonce
+            'gasPrice': Web3.toWei('1', 'gwei'),
+            'nonce': self.web3.eth.getTransactionCount(address)
         })
 
-        signed_request_tx = self.app.web3.eth.account.signTransaction(request_tx, private_key=priv_key)
+        signed_tx = self.web3.eth.account.signTransaction(approve_tx, private_key=priv_key)
+        self.web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
-        headers = {
-            'user_addr': address,
-            'user_privkey': priv_key,
-            'Content-Type': 'application/json'
-        }
+        is_approved = False
 
-        body = {
-            "escrow": 10000
-        }
+        # Poll here for those sweet sweet approval tokens.
+        while not is_approved:
+            mgc_approved = self.token_contract.functions.allowance(address, self.channel_addr).call()
+            is_approved = mgc_approved > 0
+            if not is_approved:
+                print("Still Approving...")
+                time.sleep(2)
 
-        r = requests.post('http://127.0.0.1:5000/channel', headers=headers, data=json.dumps(body))
+        print("Channel creation approved.")
 
-        print(r.status_code)
+    def create_channel(self, address, priv_key, escrow):
 
-    def create_channel(self, escrow):
+        print("Creating new channel...")
 
-        nonce = self.app.web3.eth.getTransactionCount(address)
-
-        request_tx = self.token_faucet_contract.functions.request().buildTransaction({
-            'chainId': 4,
-            'gas': 70000,
-            'gasPrice': self.app.web3.toWei('1', 'gwei'),
-            'nonce': nonce
+        create_tx = self.channel_contract.functions.createChannel(self.payment_enabler_addr, escrow).buildTransaction({
+            'chainId': 4,   # Rinkeby for now.
+            'gas': 600000,
+            'gasPrice': Web3.toWei('1', 'gwei'),
+            'nonce': self.web3.eth.getTransactionCount(address)
         })
 
-        signed_request_tx = self.app.web3.eth.account.signTransaction(request_tx, private_key=priv_key)
+        signed_tx = self.web3.eth.account.signTransaction(create_tx, private_key=priv_key)
+        self.web3.eth.sendRawTransaction(signed_tx.rawTransaction)
 
-        headers = {
-            'user_addr': address,
-            'user_privkey': priv_key,
-            'Content-Type': 'application/json'
-        }
+        is_created = False
+        while not is_created:
+            channel_amount = self.channel_contract.functions.myUserBalance(self.payment_enabler_addr).call()
+            print(channel_amount)
+            is_created = channel_amount > 0
+            if not is_created:
+                print("Still creating...")
+                time.sleep(2)
 
-        body = {
-            "escrow": 10000
-        }
-
-        r = requests.post('http://127.0.0.1:5000/channel', headers=headers, data=json.dumps(body))
-
-        print(r.status_code)
+        print("New channel created.")
 
     def create_process(self, address, priv_key, escrow):
-
         self.get_airdropped(address, priv_key)
-        # self.approve_channel(address, priv_key)
-        # self.create_channel(address, priv_key, escrow)
-
-        pass
+        self.approve_channel(address, priv_key, escrow)
+        self.create_channel(address, priv_key, escrow)
 
 
 

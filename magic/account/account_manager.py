@@ -44,11 +44,7 @@ class AccountManager:
         try:
 
             if answers['onboard_account_choice'] == "new_account":
-                account = generate_account()
-                self.address = account.address
-                self.privkey = account.privkey
-                log("Your new address: %s" % self.address, "blue")
-                log("Your new private key: %s" % self.privkey, "blue")
+                self.create_eth_account()
 
             if answers['onboard_account_choice'] == "existing_account":
                 self.privkey = answers['eth_privkey']
@@ -75,9 +71,8 @@ class AccountManager:
 
         account = generate_account()
 
-        self.pubkey = account.pubkey.lower()
-        self.address = account.address.lower()
-        self.privkey = account.privkey.lower()
+        self.address = account.address
+        self.privkey = account.privkey
 
         log("Address: %s" % self.address, "blue")
         log("Private key: %s" % self.privkey, "blue")
