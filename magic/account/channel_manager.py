@@ -65,7 +65,7 @@ class ChannelManager:
             has_tokens = mgc_tokens > 0
             if not has_tokens:
                 print("Still airdropping...")
-                time.sleep(2)
+                time.sleep(3)
 
         print("Airdrop complete: %s ETH, %s MGC" % (eth_balance, mgc_tokens))
 
@@ -90,7 +90,7 @@ class ChannelManager:
             is_approved = mgc_approved > 0
             if not is_approved:
                 print("Still Approving...")
-                time.sleep(2)
+                time.sleep(3)
 
         print("Channel creation approved.")
 
@@ -110,14 +110,13 @@ class ChannelManager:
 
         is_created = False
         while not is_created:
-            channel_amount = self.channel_contract.functions.myUserBalance(self.payment_enabler_addr).call()
-            print(channel_amount)
+            channel_amount = self.channel_contract.functions.myUserBalance(self.payment_enabler_addr).call({'from': address})
             is_created = channel_amount > 0
             if not is_created:
                 print("Still creating...")
-                time.sleep(2)
+                time.sleep(3)
 
-        print("New channel created.")
+        print("New channel created. Total: %s MGC, Enabler: %s " % (channel_amount, self.payment_enabler_addr))
 
     def create_process(self, address, priv_key, escrow):
         self.get_airdropped(address, priv_key)
