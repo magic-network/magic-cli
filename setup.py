@@ -39,6 +39,9 @@ setup(
     },
 
     install_requires=required_packages,
+    dependency_links=[
+      'git+https://github.com/polyswarm/ethash.git#egg=pyethash-0.1.27'
+    ],
     python_requires='>=3.6,<4',
     classifiers=[
         'Development Status :: 1 - Beta',
