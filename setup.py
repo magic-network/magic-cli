@@ -16,8 +16,10 @@ required_packages = [
     'termcolor==1.1.0',
     'yaspin==0.14.0']
 
-if platform.system() != 'Linux':
+if platform.system() == 'Darwin':
     required_packages.append('pyobjc==5.1.1')
+elif  platform.system() == 'Windows':
+    required_packages.append('pywifi==1.1.12')
 
 setup(
     name='magic-cli',

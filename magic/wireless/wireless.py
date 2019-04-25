@@ -1,6 +1,6 @@
 from magic.util.log import log
 from magic.util.cmd import cmd
-
+import platform
 
 class Wireless:
     _driver_name = None
@@ -15,9 +15,9 @@ class Wireless:
         elif self._driver_name == 'nmcli':
             from magic.wireless.driver.linux_nmcli import LinuxNmcli
             self._driver = LinuxNmcli()
-        else:
-            # TODO: Windows support
-            log("Your OS is not supported yet.", "red")
+        elif self._driver_name == 'windows':
+           from magic.wireless.driver.windows_wlanapi import WindowsNetworkSetup
+           self._driver = WindowsNetworkSetup()
 
         # Raise an error if interface cannot be determined
         if self.interface() is None:
@@ -33,6 +33,9 @@ class Wireless:
         response = cmd('which nmcli')
         if len(response.stdout) > 0 and 'not found' not in response.stdout:
             return 'nmcli'
+        # Windows
+        elif platform.system() == 'Windows':
+            return 'windows'
         raise Exception('Unable to find compatible wireless driver.')
 
     # Check for existence of 8021x creds instalsled already
