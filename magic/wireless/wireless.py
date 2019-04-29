@@ -2,6 +2,7 @@ from magic.util.log import log
 from magic.util.cmd import cmd
 import platform
 
+
 class Wireless:
     _driver_name = None
     _driver = None
@@ -9,6 +10,7 @@ class Wireless:
     def __init__(self, interface=None):
         # Detect the platform's driver
         self._driver_name = self.detect_driver()
+        log("Found driver: %s" % self._driver_name, 'blue')
         if self._driver_name == 'networksetup':
             from magic.wireless.driver.macos_networksetup import MacOSNetworksetup
             self._driver = MacOSNetworksetup()
@@ -16,8 +18,8 @@ class Wireless:
             from magic.wireless.driver.linux_nmcli import LinuxNmcli
             self._driver = LinuxNmcli()
         elif self._driver_name == 'windows':
-           from magic.wireless.driver.windows_wlanapi import WindowsNetworkSetup
-           self._driver = WindowsNetworkSetup()
+            from magic.wireless.driver.windows_wlanapi import WindowsNetworkSetup
+            self._driver = WindowsNetworkSetup()
 
         # Raise an error if interface cannot be determined
         if self.interface() is None:
@@ -25,6 +27,11 @@ class Wireless:
 
     @staticmethod
     def detect_driver():
+
+        # Windows
+        # do this first because which doesn't exist for windows cmd
+        if platform.system() == 'Windows':
+            return 'windows'
         # MacOS
         response = cmd('which networksetup')
         if len(response.stdout) > 0 and 'not found' not in response.stdout:
@@ -33,9 +40,6 @@ class Wireless:
         response = cmd('which nmcli')
         if len(response.stdout) > 0 and 'not found' not in response.stdout:
             return 'nmcli'
-        # Windows
-        elif platform.system() == 'Windows':
-            return 'windows'
         raise Exception('Unable to find compatible wireless driver.')
 
     # Check for existence of 8021x creds instalsled already

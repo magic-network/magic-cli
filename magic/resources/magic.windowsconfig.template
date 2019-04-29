@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1">
+    <name>{{ profile_name }}</name>
+    <SSIDConfig>
+        <SSID>
+            <name>{{ ssid }}</name>
+        </SSID>
+        <nonBroadcast>false</nonBroadcast>
+    </SSIDConfig>
+    <connectionType>ESS</connectionType>
+    <connectionMode>manual</connectionMode>
+    <autoSwitch>false</autoSwitch>
+    <MSM>
+        <security>
+            <authEncryption>
+                <authentication>WPA2</authentication>
+                <encryption>AES</encryption>
+                <useOneX>true</useOneX>
+                <FIPSMode xmlns="http://www.microsoft.com/networking/WLAN/profile/v2">false</FIPSMode>
+            </authEncryption>
+            <preAuthMode>disabled</preAuthMode>
+            <OneX xmlns="http://www.microsoft.com/networking/OneX/v1">
+                <cacheUserData>true</cacheUserData>
+                <authMode>user</authMode>
+                <EAPConfig>
+                    <EapHostConfig xmlns="http://www.microsoft.com/provisioning/EapHostConfig">
+                        <EapMethod>
+                            <Type xmlns="http://www.microsoft.com/provisioning/EapCommon">21</Type>
+                            <VendorId xmlns="http://www.microsoft.com/provisioning/EapCommon">0</VendorId>
+                            <VendorType xmlns="http://www.microsoft.com/provisioning/EapCommon">0</VendorType>
+                            <AuthorId xmlns="http://www.microsoft.com/provisioning/EapCommon">311</AuthorId>
+                        </EapMethod>
+                        <Config xmlns="http://www.microsoft.com/provisioning/EapHostConfig">
+                            <EapTtls xmlns="http://www.microsoft.com/provisioning/EapTtlsConnectionPropertiesV1">
+                                <ServerValidation>
+                                    <ServerNames></ServerNames>
+                                    <TrustedRootCAHash>6c c5 f0 4d f2 79 f8 a3 db 13 ef 91 76 8b d4 14 6a 7 96 ea 5f 3e 99 99 cc 67 93 9f 90 11 81 4c</TrustedRootCAHash>
+                                    <TrustedRootCAHash>27 bd f7 2d f7 ca 76 39 67 6a 89 d 6d 2f 26 bf 28 1b 51 f5 91 83 1c ac 1c 40 f1 b0 49 a1 3c a</TrustedRootCAHash>
+                                    <TrustedRootCAHash>f5 54 0 f5 f7 93 7b 4e 31 0 a1 4a 95 27 5a 25 e1 f8 53 40 7d ae e3 aa a2 f3 a2 78 82 45 c6 3a</TrustedRootCAHash>
+                                    <TrustedRootCAHash>a1 da dd 5e 9 4 f5 77 8d 9d a3 d7 64 cb 80 a3 b 49 4f 3c 6e 19 e2 6b 5a df e3 7d 84 fb b9 b3</TrustedRootCAHash>
+                                    <DisablePrompt>false</DisablePrompt>
+                                </ServerValidation>
+                                <Phase2Authentication>
+                                    <PAPAuthentication/>
+                                </Phase2Authentication>
+                                <Phase1Identity>
+                                    <IdentityPrivacy>false</IdentityPrivacy>
+                                </Phase1Identity>
+                            </EapTtls>
+                        </Config>
+                    </EapHostConfig>
+                </EAPConfig>
+            </OneX>
+        </security>
+    </MSM>
+</WLANProfile>
