@@ -42,7 +42,7 @@ class MacOSNetworksetup(WirelessDriver):
 
         print("python radiusauth.py -s /tmp/magicsock %s %s-%s" % (address, timestamp, signature))
 
-        rendered_mobileconfig = template_env.get_template('magic.mobileconfig.template').render(
+        rendered_mobileconfig = template_env.get_template('magic.appleconfig.template').render(
             address=address,
             signature=signature,
             ssid=ssid,
