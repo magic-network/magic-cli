@@ -7,3 +7,6 @@ __pycache__/
 build
 dist
 github
+Scripts
+Lib
+pyvenv.cfg
