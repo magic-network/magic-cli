@@ -13,7 +13,12 @@ import click
 from magic.daemon.network_monitor import NetworkMonitor
 from magic.account.account_manager import AccountManager
 from magic.network.network_manager import NetworkManager
+from magic.wireless.wireless import Wireless
+from magic.util.prompt import get_prompt, tryconvert
 from magic.util.log import log
+from yaspin import yaspin
+
+import sys
 
 DEV = True
 
@@ -51,17 +56,34 @@ def main():
     log("Welcome to Magic", "green")
     print("\t")
 
-    network_manager = NetworkManager()
-    account_manager = AccountManager()
+    wireless = Wireless()
+    network_manager = NetworkManager(wireless)
+    account_manager = AccountManager(wireless)
     network_daemon = NetworkMonitor(10)
 
     # Setup initial user account data
     account_manager.get_critical_info()
 
-    # Let developers choose the ssid of the magic network they'd like to connect to.
-    if DEV:
-        network_manager.get_custom_network_ssid()
+    ssids = None
 
+    if DEV:
+        # Scan for local networks
+        answers = get_prompt([ {
+                'type': 'input',
+                'name': 'wait_time',
+                'message': 'How many seconds to scan for magic networks?',
+                'default': '10'
+        }])
+
+        with yaspin():
+            ssids = wireless.scan(int(answers['wait_time']))
+        
+        network_manager.get_custom_network_ssid(ssids)
+
+        if not ssids:
+            log("Could not find any magic ssids!", "red")
+            sys.exit(1)
+    
     # Make sure any profiles or wpa_supplicants are installed.
     account_manager.setup_8021x_creds(network_manager.ssid)
 

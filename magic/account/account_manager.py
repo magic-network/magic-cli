@@ -1,16 +1,16 @@
 import time
 from magic.util.log import log
 from magic.util.prompt import get_prompt
-from magic.util.eth import generate_account, sign
 from magic.wireless.wireless import Wireless
+from magic.util.eth import generate_account, sign
 
 
 class AccountManager:
-    def __init__(self):
+    def __init__(self, wireless=Wireless()):
         self.onboarded = False
         self.address = None
         self.privkey = None
-        self.wireless = Wireless()
+        self.wireless = wireless
 
     def get_critical_info(self):
         answers = get_prompt([
@@ -65,6 +65,7 @@ class AccountManager:
         has_creds = self.wireless.has_8021x_creds(ssid, self.address, self.privkey)
 
         if has_creds is False:
+            log("No credentials found for magic, adding profile", 'yellow')
             timestamp = str(int(time.time()))
 
             self.wireless.install_8021x_creds(

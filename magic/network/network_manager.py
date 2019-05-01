@@ -8,14 +8,12 @@ from magic.util.prompt import get_prompt
 
 
 class NetworkManager:
-    def __init__(self):
-        self.wireless = Wireless()
+    def __init__(self, wireless=Wireless()):
+        self.wireless = wireless
         self.current_network = None
         self.ssid = "magic"
 
-    def get_custom_network_ssid(self):
-        with yaspin():
-            ssids = self.wireless.scan()
+    def get_custom_network_ssid(self, ssids):
 
         if not ssids:
             log("Could not find any magic ssids!", "red")
@@ -38,7 +36,10 @@ class NetworkManager:
         log("Magically connecting to the best network...", "yellow")
 
         with yaspin():
-            self.wireless.connect(self.ssid)
+            success = self.wireless.connect(self.ssid)
 
         # TODO: Ping some endpoint until connectivity is guaranteed?
-        log("You're connected! Enjoy your magic internet.")
+        if success:
+            log("You're connected! Enjoy your magic internet.")
+        else:
+            log("Was not able to connect to the network :(", 'red')
