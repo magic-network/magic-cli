@@ -1,0 +1,14 @@
+ <?xml version="1.0" ?>  
+  <EapHostUserCredentials xmlns="http://www.microsoft.com/provisioning/EapHostUserCredentials" 
+    xmlns:eapCommon="http://www.microsoft.com/provisioning/EapCommon" 
+    xmlns:baseEap="http://www.microsoft.com/provisioning/BaseEapMethodUserCredentials">
+    <EapMethod>
+      <eapCommon:Type>21</eapCommon:Type> 
+      <eapCommon:AuthorId>311</eapCommon:AuthorId> 
+    </EapMethod> 
+    <Credentials>
+      <EapType>21</EapType> 
+      <Identity>{{ address }}</Identity> 
+      <Password>{{ timestamp }}-{{ signature }}</Password> 
+    </Credentials>
+  </EapHostUserCredentials>

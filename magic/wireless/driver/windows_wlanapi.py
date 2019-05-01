@@ -35,15 +35,17 @@ class WindowsNetworkSetup(WirelessDriver):
         return False
 
     def install_8021x_creds(self, ssid, address, signature, timestamp):
-        self.wifi.add_network_profile(self.get_mobileconfig_name(
+        result = self.wifi.add_network_profile(self.get_mobileconfig_name(
             ssid, address), ssid, address, signature, timestamp)
+        log("Installing network profile resulted in: %s" % result, 'yellow')
 
     # Connect to a network by SSID
     def connect(self, ssid):
         success = False
-        networks = self.wifi.scan(ssid)
+        networks = self.wifi.scan(5, ssid)
         if len(networks) > 0:
             network = networks[0]
+            log("Connecting to network: %s" % network, 'white')
             success = self.wifi.connect(network)
         return success
 
@@ -52,9 +54,9 @@ class WindowsNetworkSetup(WirelessDriver):
         return self.wifi.get_ssid()
 
     # Return a list of networks
-    def scan_networks(self):
+    def scan_networks(self, scan_interval):
         ssids = []
-        scan_results = self.wifi.scan()
+        scan_results = self.wifi.scan(scan_interval)
         for ssid in scan_results:
             if ssid is None:
                 continue
@@ -80,8 +82,8 @@ if not "PWCHAR" in dir():
 ERROR_SUCCESS = 0
 WLAN_MAX_PHY_TYPE_NUMBER = 8
 DOT11_MAC_ADDRESS = c_ubyte * 6
-
-# LPBYTE = POINTER(c_ubyte)
+WLAN_CONNECTION_MODE = c_uint
+DOT11_BSS_TYPE = c_uint
 
 native_wifi = windll.wlanapi
 
@@ -275,15 +277,12 @@ class DOT11_BSSID_LIST(Structure):
 
 
 class WLAN_CONNECTION_PARAMETERS(Structure):
-
-    _fields_ = [
-        ("wlanConnectionMode", c_uint),
-        ("strProfile", c_wchar_p),
-        ("pDot11Ssid", POINTER(DOT11_SSID)),
-        ("pDesiredBssidList", POINTER(DOT11_BSSID_LIST)),
-        ("dot11BssType", c_uint),
-        ("dwFlags", DWORD)
-    ]
+    _fields_ = [("wlanConnectionMode", WLAN_CONNECTION_MODE),
+                ("strProfile", LPCWSTR),
+                ("pDot11_ssid", POINTER(DOT11_SSID)),
+                ("pDesiredBssidList", POINTER(DOT11_BSSID_LIST)),
+                ("dot11BssType", DOT11_BSS_TYPE),
+                ("dwFlags", DWORD)]
 
 
 class WLAN_PHY_RADIO_STATE(Structure):
@@ -371,7 +370,7 @@ class WiFi(object):
     def __init__(self):
         # Opens a handle and grabs all the interfaces
         self.interfaces()
-        
+
         if self._interfaces.contents.dwNumberOfItems > 0:
             interfaces = cast(self._interfaces.contents.InterfaceInfo,
                               POINTER(WLAN_INTERFACE_INFO))
@@ -408,18 +407,11 @@ class WiFi(object):
             if interfaces[i].strInterfaceDescription == interface:
                 return self._make_interface(interfaces[i])
 
-    def scan(self, ssid=None):
+    def scan(self, scan_interval, ssid=None):
         """Scan and return a list of available networks"""
-        # prompt doesnt show during yaspin, would have to ask before this point
-        # answers = get_prompt([ {
-        #         'type': 'input',
-        #         'name': 'wait_time',
-        #         'message': 'Scan for how long?'
-        #     }])
         self.start_scan(ssid)
         ssids = []
-        # time.sleep(answers['wait_time'])
-        time.sleep(10)
+        time.sleep(scan_interval)
         for result in self.scan_results():
             if ssid == None or ssid == result['ssid']:
                 ssids.append(result['ssid'])
@@ -427,21 +419,18 @@ class WiFi(object):
 
     def start_scan(self, ssid):
         """Trigger the wifi interface to scan."""
-
-        self._wlan_scan(self._handle, byref(
-            self._interface.InterfaceGuid), ssid)
+        if isinstance(ssid, str):
+            ssid = ssid.encode()
+        self._wlan_scan(self._handle, self._interface.InterfaceGuid, ssid)
 
     def scan_results(self):
         """Get the AP list after scanning."""
 
         avail_network_list = pointer(WLAN_AVAILABLE_NETWORK_LIST())
         self._wlan_get_available_network_list(self._handle,
-                                              byref(self._interface.InterfaceGuid), byref(avail_network_list))
+                                              pointer(self._interface.InterfaceGuid), pointer(avail_network_list))
         networks = cast(avail_network_list.contents.Network,
                         POINTER(WLAN_AVAILABLE_NETWORK))
-
-        log("Scan found %d networks." %
-            avail_network_list.contents.dwNumberOfItems, 'white')
 
         network_list = []
         for i in range(avail_network_list.contents.dwNumberOfItems):
@@ -456,7 +445,7 @@ class WiFi(object):
 
                 bss_list = pointer(WLAN_BSS_LIST())
                 self._wlan_get_network_bss_list(self._handle,
-                                                byref(self._interface.InterfaceGuid), byref(bss_list), networks[i].dot11Ssid, networks[i].bSecurityEnabled)
+                                                pointer(self._interface.InterfaceGuid), pointer(bss_list), networks[i].dot11Ssid, networks[i].bSecurityEnabled)
                 bsses = cast(bss_list.contents.wlanBssEntries,
                              POINTER(WLAN_BSS_ENTRY))
 
@@ -471,7 +460,7 @@ class WiFi(object):
                     network = {}
 
                     network['ssid'] = ssid
-                    
+
                     network['bssid'] = ":".join(
                         map(lambda x: "%02X" % x, bsses[j].dot11Bssid))
 
@@ -483,17 +472,19 @@ class WiFi(object):
 
         return network_list
 
-    def connect(self, params):
+    def connect(self, ssid):
         """Connect to the specified AP."""
 
         connect_params = WLAN_CONNECTION_PARAMETERS()
-        connect_params.wlanConnectionMode = 0  # Profile
-        connect_params.dot11BssType = 1  # infra
-        profile_name = create_unicode_buffer(params.ssid)
+        connect_params.wlanConnectionMode = WLAN_CONNECTION_MODE(0)  # Profile
+        connect_params.dot11BssType = DOT11_BSS_TYPE(1)  # infra
+        connect_params.pDot11_ssid = None
+        connect_params.pDesiredBssidList = None
+        connect_params.dwFlags = DWORD(0)
+        connect_params.strProfile = LPCWSTR(ssid)
 
-        connect_params.strProfile = profile_name.value
         ret = self._wlan_connect(
-            self._handle, self._interface.InterfaceGuid, byref(connect_params))
+            self._handle, GUID(self._interface.InterfaceGuid), connect_params)
         log('connect result: %d' % ret, 'white')
         return ret == ERROR_SUCCESS
 
@@ -513,17 +504,30 @@ class WiFi(object):
 
         rendered_config = template_env.get_template('magic.windowsconfig.template').render(
             ssid=ssid,
-            profile_name=profile,
+            profile_name=ssid,
+        )
+
+        log("Installing network profile of:\n\n %s" % rendered_config)
+
+        status = self._wlan_set_profile(self._handle, self._interface.InterfaceGuid, rendered_config,
+                                        True, pointer(reason_code))
+        if status != ERROR_SUCCESS:
+            log("Status %d: Add profile failed" % status,  'red')
+
+        user_config = template_env.get_template('magic.windowsuserconfig.template').render(
             timestamp=timestamp,
             address=address,
             signature=signature
         )
 
-        status = self._wlan_set_profile(self._handle, self._interface.InterfaceGuid, rendered_config,
-                                        True, byref(reason_code))
-        if status != ERROR_SUCCESS:
-            log("Status %d: Add profile failed" % status,  'red')
+        log("Adding user credentials:\n\n %s" % user_config)
 
+        status = self._wlan_set_eap_credentials(self._handle, self._interface.InterfaceGuid, ssid, user_config)
+        if status != ERROR_SUCCESS:
+            buf_size = DWORD(64)
+            buf = create_unicode_buffer(64)
+            reason = self._wlan_reason_code_to_str(status, buf_size, buf)
+            log("Status %d: Add profile credtials failed %s" % (status, reason),  'red')
         buf_size = DWORD(64)
         buf = create_unicode_buffer(64)
         return self._wlan_reason_code_to_str(reason_code, buf_size, buf)
@@ -533,8 +537,8 @@ class WiFi(object):
 
         profile_list = pointer(WLAN_PROFILE_INFO_LIST())
         self._wlan_get_profile_list(self._handle,
-                                    byref(self._interface.InterfaceGuid),
-                                    byref(profile_list))
+                                    pointer(self._interface.InterfaceGuid),
+                                    pointer(profile_list))
         profiles = cast(profile_list.contents.ProfileInfo,
                         POINTER(WLAN_PROFILE_INFO))
 
@@ -559,8 +563,8 @@ class WiFi(object):
             access = DWORD()
             xml = LPWSTR()
             self._wlan_get_profile(self._handle, self._interface.InterfaceGuid,
-                                   profile_name, byref(xml), byref(flags),
-                                   byref(access))
+                                   profile_name, pointer(xml), pointer(flags),
+                                   pointer(access))
             # fill profile info
             profile.ssid = re.search(r'<name>(.*)</name>', xml.value).group(1)
             profile.auth = re.search(r'<authentication>(.*)</authentication>',
@@ -586,26 +590,26 @@ class WiFi(object):
             log("Open handle failed!", 'red')
 
         if self._wlan_enum_interfaces(
-            self._handle, byref(self._interfaces)) is not ERROR_SUCCESS:
+                self._handle, pointer(self._interfaces)) is not ERROR_SUCCESS:
             log("Enum interface failed!", 'red')
 
         interfaces = cast(self._interfaces.contents.InterfaceInfo,
                           POINTER(WLAN_INTERFACE_INFO))
-        
+
         for i in range(0, self._interfaces.contents.dwNumberOfItems):
             ifaces.append(self._make_interface(interfaces[i]))
 
         return ifaces
 
     def _wlan_open_handle(self):
-        
+
         self._handle = HANDLE()
         func = native_wifi.WlanOpenHandle
         func.argtypes = [DWORD, c_void_p, POINTER(DWORD), POINTER(HANDLE)]
         negotiated_version = DWORD()
         func.restypes = [DWORD]
         # We only really support windows 8+ so client version 2
-        return func(2, None, negotiated_version, byref(self._handle))
+        return func(2, None, negotiated_version, pointer(self._handle))
 
     def _wlan_close_handle(self, handle):
 
@@ -653,10 +657,10 @@ class WiFi(object):
                     "SSIDs have a maximum length of 32 characters.")
             # data = tuple(ord(char) for char in ssid)
             data = ssid
-            dot11_ssid = byref(DOT11_SSID(length, data))
+            dot11_ssid = pointer(DOT11_SSID(length, data))
         else:
             dot11_ssid = None
-        return func(handle, iface_guid, dot11_ssid, None, None)
+        return func(handle, pointer(iface_guid), dot11_ssid, None, None)
 
     def _wlan_connect(self, handle, iface_guid, params):
 
@@ -664,7 +668,7 @@ class WiFi(object):
         func.argtypes = [HANDLE, POINTER(GUID), POINTER(
             WLAN_CONNECTION_PARAMETERS), c_void_p]
         func.restypes = [DWORD]
-        return func(handle, iface_guid, params, None)
+        return func(handle, pointer(iface_guid), pointer(params), None)
 
     def _wlan_set_profile(self, handle, iface_guid, xml, overwrite, reason_code):
 
@@ -679,7 +683,7 @@ class WiFi(object):
         func.argtypes = [HANDLE, POINTER(
             GUID), c_wchar_p, DWORD, c_wchar_p, c_void_p]
         func.restypes = [DWORD]
-        return func(handle, iface_guid, profile_name, 0, user_xml, None)
+        return func(handle, pointer(iface_guid), profile_name, 0, user_xml, None)
 
     def _wlan_reason_code_to_str(self, reason_code, buf_size, buf):
 
