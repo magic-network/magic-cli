@@ -18,16 +18,17 @@ class LinuxNmcli(WirelessDriver):
     @staticmethod
     def get_mobileconfig_name(ssid, username):
         return ssid
-        #return "%s-%s" % (ssid, username)
+        # return "%s-%s" % (ssid, username)
 
     def has_8021x_creds(self, ssid, address, signature):
         mobileconfig_name = self.get_mobileconfig_name(ssid, address)
         interface = self.interface()
-        if len(interface) == 0: return None
+        if len(interface) == 0:
+            return None
         response = cmd("nmcli -t -f 802-1x.eap conn show " + ssid)
         has_config = False
         for line in response.stdout.splitlines():
-            line_field,line_value = line.split(":")
+            line_field, line_value = line.split(":")
             if line_field == "802-1x.eap" and line_value == "ttls":
                 has_config = True
                 break
@@ -35,12 +36,13 @@ class LinuxNmcli(WirelessDriver):
 
     def install_8021x_creds(self, ssid, address, signature, timestamp):
         mobileconfig_name = self.get_mobileconfig_name(ssid, address)
-        response = cmd('nmcli con add type wifi ifname %s con-name %s ssid %s ipv4.method auto 802-1x.eap ttls 802-1x.phase2-auth pap 802-1x.identity %s 802-1x.password %s-%s 802-11-wireless-security.key-mgmt wpa-eap' % (self.interface(), mobileconfig_name, ssid, address, timestamp, signature))
+        response = cmd('nmcli con add type wifi ifname %s con-name %s ssid %s ipv4.method auto 802-1x.eap ttls 802-1x.phase2-auth pap 802-1x.identity %s 802-1x.password %s-%s 802-11-wireless-security.key-mgmt wpa-eap' %
+                       (self.interface(), mobileconfig_name, ssid, address, timestamp, signature))
         if not response.returncode == 0:
             log("An error occured: %s" % response.stdout, "red")
             return False
         return True
-        
+
     # Connect to a network by SSID
     def connect(self, ssid):
         success = False
@@ -55,7 +57,7 @@ class LinuxNmcli(WirelessDriver):
         return self.wifi.get_ssid()
 
     # Return a list of networks
-    def scan_networks(self):
+    def scan_networks(self, scan_interval):
         ssids = []
         scan_results = self.wifi.scan()
         for ssid in scan_results:
@@ -73,9 +75,6 @@ class LinuxNmcli(WirelessDriver):
 class WiFi(object):
     def __init__(self):
         pass
-        #self.wifi = CWInterface.interfaceNames()
-        #for iname in self.wifi:
-        #    self.interface = CWInterface.interfaceWithName_(iname)
 
     def get_wifistatus(self):
         response = cmd("nmcli radio wifi")
@@ -87,21 +86,21 @@ class WiFi(object):
         response = cmd("nmcli -t -f active,ssid dev wifi")
         ssid = ""
         for line in response.stdout.splitlines():
-            line_status,line_ssid = line.split(":")
+            line_status, line_ssid = line.split(":")
             if line_status == "yes":
                 ssid = line_ssid
         return ssid
-    
-    def scan(self,ssid=None):
+
+    def scan(self, ssid=None):
         response = cmd("nmcli -t -f active,ssid dev wifi list")
         ssids = []
         for line in response.stdout.splitlines():
-            line_status,line_ssid = line.split(":")
+            line_status, line_ssid = line.split(":")
             if ssid == None or ssid == line_ssid:
                 ssids.append(line_ssid)
         return ssids
-    
-    def associate(self,ssid):
+
+    def associate(self, ssid):
         response = cmd("nmcli con up %s" % ssid)
         if not response.returncode == 0:
             log("An error occured: %s" % response.stdout, "red")
@@ -112,18 +111,19 @@ class WiFi(object):
         response = cmd("nmcli -t -f device,type dev")
         interface = ""
         for line in response.stdout.splitlines():
-            line_interface,line_type = line.split(":")
+            line_interface, line_type = line.split(":")
             if line_type == "wifi":
                 interface = line_interface
         return interface
 
     def get_hardwareaddress(self):
         interface = self.get_interface()
-        if len(interface) == 0: return None
+        if len(interface) == 0:
+            return None
         response = cmd("nmcli -t -f general.hwaddr dev show " + interface)
         hwaddr = ""
         for line in response.stdout.splitlines():
-            line_field,line_hwaddr = line.split(":")
+            line_field, line_hwaddr = line.split(":")
             if line_field == "GENERAL.HWADDR":
                 hwaddr = line_hwaddr
         return hwaddr
@@ -140,16 +140,16 @@ class WiFi(object):
         response = cmd("nmcli -t -f active,bssid dev wifi")
         bssid = ""
         for line in response.stdout.splitlines():
-            line_status,line_bssid = line.split(":")
+            line_status, line_bssid = line.split(":")
             if line_status == "yes":
                 bssid = line_bssid
         return bssid
-    
+
     def get_channel(self):
         response = cmd("nmcli -t -f active,chan dev wifi")
         chan = ""
         for line in response.stdout.splitlines():
-            line_status,line_chan = line.split(":")
+            line_status, line_chan = line.split(":")
             if line_status == "yes":
                 chan = line_chan
         return chan

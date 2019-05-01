@@ -59,8 +59,10 @@ class Wireless:
         return self._driver.current_ssid()
 
     # Return a list of networks
-    def scan(self):
-        return self._driver.scan_networks()
+    def scan(self, scan_interval):
+        networks = self._driver.scan_networks(scan_interval)
+        log("Scan found %d magic networks available." % len(networks), 'white')
+        return networks
 
     # Return the current wireless adapter
     def interface(self, interface=None):

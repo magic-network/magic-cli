@@ -40,7 +40,8 @@ class MacOSNetworksetup(WirelessDriver):
         template_env = Environment(loader=FileSystemLoader(RESOURCES_PATH))
         mobileconfig_name = self.get_mobileconfig_name(ssid, address)
 
-        print("python radiusauth.py -s /tmp/magicsock %s %s-%s" % (address, timestamp, signature))
+        print("python radiusauth.py -s /tmp/magicsock %s %s-%s" %
+              (address, timestamp, signature))
 
         rendered_mobileconfig = template_env.get_template('magic.appleconfig.template').render(
             address=address,
@@ -66,12 +67,14 @@ class MacOSNetworksetup(WirelessDriver):
             raise Exception("An error occured: %s" % error)
 
         mobileconfig_filename = "%s.mobileconfig" % mobileconfig_name
-        mobileconfig_file = open("%s/%s" % (RESOURCES_PATH, mobileconfig_filename), "w")
+        mobileconfig_file = open(
+            "%s/%s" % (RESOURCES_PATH, mobileconfig_filename), "w")
         mobileconfig_file.write(rendered_mobileconfig)
         mobileconfig_file.close()
 
         response = cmd(
-            "profiles install -path=%s/%s -user=%s" % (RESOURCES_PATH, mobileconfig_filename, getpass.getuser()),
+            "profiles install -path=%s/%s -user=%s" % (
+                RESOURCES_PATH, mobileconfig_filename, getpass.getuser()),
             True,
             passwd.encode()
         )
@@ -85,7 +88,8 @@ class MacOSNetworksetup(WirelessDriver):
 
     # Connect to a network by SSID
     def connect(self, ssid):
-        networks, error = self.wifi.interface.scanForNetworksWithName_error_(ssid, None)
+        networks, error = self.wifi.interface.scanForNetworksWithName_error_(
+            ssid, None)
         network = networks.anyObject()
         success, error = self.wifi.interface.associateToEnterpriseNetwork_identity_username_password_error_(network,
                                                                                                             None,
@@ -98,13 +102,15 @@ class MacOSNetworksetup(WirelessDriver):
         return self.wifi.get_ssid()
 
     # Return a list of networks
-    def scan_networks(self):
+    def scan_networks(self, scan_interval):
         ssids = []
         try:
-            scan_results = self.wifi.interface.scanForNetworksWithName_includeHidden_error_(None, True, None)
+            scan_results = self.wifi.interface.scanForNetworksWithName_includeHidden_error_(
+                None, True, None)
         except AttributeError:
             # The includeHidden parameter is only available on OSX 10.13+
-            scan_results = self.wifi.interface.scanForNetworksWithName_error_(None, None)
+            scan_results = self.wifi.interface.scanForNetworksWithName_error_(
+                None, None)
 
         for network in scan_results[0]:
             ssid = network.ssid()
