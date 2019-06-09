@@ -91,10 +91,8 @@ class MacOSNetworksetup(WirelessDriver):
         networks, error = self.wifi.interface.scanForNetworksWithName_error_(
             ssid, None)
         network = networks.anyObject()
-        success, error = self.wifi.interface.associateToEnterpriseNetwork_identity_username_password_error_(network,
-                                                                                                            None,
-                                                                                                            None, None,
-                                                                                                            None)
+        success, error = self.wifi.interface.associateToEnterpriseNetwork_identity_username_password_error_(
+            network, None, None, None, None)
         return success
 
     # Return current SSID

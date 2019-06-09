@@ -36,8 +36,14 @@ class LinuxNmcli(WirelessDriver):
 
     def install_8021x_creds(self, ssid, address, signature, timestamp):
         mobileconfig_name = self.get_mobileconfig_name(ssid, address)
-        response = cmd('nmcli con add type wifi ifname %s con-name %s ssid %s ipv4.method auto 802-1x.eap ttls 802-1x.phase2-auth pap 802-1x.identity %s 802-1x.password %s-%s 802-11-wireless-security.key-mgmt wpa-eap' %
-                       (self.interface(), mobileconfig_name, ssid, address, timestamp, signature))
+        response = cmd(
+            'nmcli con add type wifi ifname %s con-name %s ssid %s ipv4.method auto 802-1x.eap ttls 802-1x.phase2-auth pap 802-1x.identity %s 802-1x.password %s-%s 802-11-wireless-security.key-mgmt wpa-eap' %
+            (self.interface(),
+             mobileconfig_name,
+             ssid,
+             address,
+             timestamp,
+             signature))
         if not response.returncode == 0:
             log("An error occured: %s" % response.stdout, "red")
             return False
@@ -96,7 +102,7 @@ class WiFi(object):
         ssids = []
         for line in response.stdout.splitlines():
             line_status, line_ssid = line.split(":")
-            if ssid == None or ssid == line_ssid:
+            if ssid is None or ssid == line_ssid:
                 ssids.append(line_ssid)
         return ssids
 

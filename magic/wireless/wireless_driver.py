@@ -27,4 +27,3 @@ class WirelessDriver:
     @abstractmethod
     def interface(self, interface=None):
         pass
-

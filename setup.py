@@ -16,9 +16,9 @@ required_packages = [
     'termcolor==1.1.0',
     'yaspin==0.14.0']
 
-if platform.system() == 'Darwin': #osx
+if platform.system() == 'Darwin':  # osx
     required_packages.append('pyobjc==5.1.1')
-elif  platform.system() == 'Windows':
+elif platform.system() == 'Windows':
     required_packages.append('comtypes==1.1.7')
 
 setup(
@@ -42,7 +42,7 @@ setup(
 
     install_requires=required_packages,
     dependency_links=[
-      'git+https://github.com/polyswarm/ethash.git#egg=pyethash-0.1.27'
+        'git+https://github.com/polyswarm/ethash.git#egg=pyethash-0.1.27'
     ],
     python_requires='>=3.6,<4',
     classifiers=[

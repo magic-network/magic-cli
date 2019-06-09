@@ -39,7 +39,8 @@ class ProfileManager:
     # Install network profile
     @staticmethod
     def install_profile(passwd):
-        response = cmd("profiles install -path=magic/resources/magic.mobileconfig -user=%s" %
-                       getpass.getuser(), True, passwd.encode())
+        response = cmd(
+            "profiles install -path=magic/resources/magic.mobileconfig -user=%s" %
+            getpass.getuser(), True, passwd.encode())
         if not response.returncode == 0:
             log("An error occured: %s" % response.stdout, "red")

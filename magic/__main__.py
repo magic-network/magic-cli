@@ -68,22 +68,22 @@ def main():
 
     if DEV:
         # Scan for local networks
-        answers = get_prompt([ {
-                'type': 'input',
-                'name': 'wait_time',
-                'message': 'How many seconds to scan for magic networks?',
-                'default': '10'
+        answers = get_prompt([{
+            'type': 'input',
+            'name': 'wait_time',
+            'message': 'How many seconds to scan for magic networks?',
+            'default': '10'
         }])
 
         with yaspin():
             ssids = wireless.scan(int(answers['wait_time']))
-        
+
         network_manager.get_custom_network_ssid(ssids)
 
         if not ssids:
             log("Could not find any magic ssids!", "red")
             sys.exit(1)
-    
+
     # Make sure any profiles or wpa_supplicants are installed.
     account_manager.setup_8021x_creds(network_manager.ssid)
 
