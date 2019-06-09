@@ -34,11 +34,11 @@ class Wireless:
             return 'wlanapi'
         # MacOS
         response = cmd('which networksetup')
-        if len(response.stdout) > 0 and 'not found' not in response.stdout:
+        if response.stdout and 'not found' not in response.stdout:
             return 'networksetup'
         # Linux
         response = cmd('which nmcli')
-        if len(response.stdout) > 0 and 'not found' not in response.stdout:
+        if response.stdout and 'not found' not in response.stdout:
             return 'nmcli'
         raise Exception('Unable to find compatible wireless driver.')
 

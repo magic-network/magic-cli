@@ -21,7 +21,7 @@ class WirelessDriver:
         pass
 
     @abstractmethod
-    def scan_networks(self):
+    def scan_networks(self, scan_interval):
         pass
 
     @abstractmethod

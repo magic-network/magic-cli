@@ -23,7 +23,7 @@ class LinuxNmcli(WirelessDriver):
     def has_8021x_creds(self, ssid, address, signature):
         mobileconfig_name = self.get_mobileconfig_name(ssid, address)
         interface = self.interface()
-        if len(interface) == 0:
+        if not interface:
             return None
         response = cmd("nmcli -t -f 802-1x.eap conn show " + ssid)
         has_config = False
@@ -53,7 +53,7 @@ class LinuxNmcli(WirelessDriver):
     def connect(self, ssid):
         success = False
         networks = self.wifi.scan(ssid)
-        if len(networks) > 0:
+        if networks:
             network = networks[0]
             success = self.wifi.associate(network)
         return success
@@ -108,7 +108,7 @@ class WiFi():
 
     def associate(self, ssid):
         response = cmd("nmcli con up %s" % ssid)
-        if not response.returncode == 0:
+        if response.returncode != 0:
             log("An error occured: %s" % response.stdout, "red")
             return False
         return True
@@ -124,7 +124,7 @@ class WiFi():
 
     def get_hardwareaddress(self):
         interface = self.get_interface()
-        if len(interface) == 0:
+        if not interface:
             return None
         response = cmd("nmcli -t -f general.hwaddr dev show " + interface)
         hwaddr = ""
