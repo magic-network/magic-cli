@@ -4,7 +4,7 @@ from ethereum.utils import privtoaddr, encode_hex, decode_hex, ecsign, sha3, nor
 
 # Generate a new ethereum account
 
-
+#pylint: disable=no-member
 def generate_account():
 
     acct = w3.eth.account.create(os.urandom(4096))
