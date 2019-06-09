@@ -10,3 +10,5 @@ github
 Scripts
 Lib
 pyvenv.cfg
+.DS_Store
+bin
