@@ -3,7 +3,7 @@ import platform
 
 required_packages = [
     'ethereum==2.3.2',
-    'web3==4.8.1',
+    'web3==4.9.2',
     'Click==7.0',
     'colorama==0.4.0',
     'future==0.17.1',
