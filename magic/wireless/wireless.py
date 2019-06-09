@@ -1,6 +1,6 @@
+import platform
 from magic.util.log import log
 from magic.util.cmd import cmd
-import platform
 
 
 class Wireless:

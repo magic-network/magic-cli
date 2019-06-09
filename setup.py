@@ -1,5 +1,5 @@
-from setuptools import setup, find_packages
 import platform
+from setuptools import setup, find_packages
 
 required_packages = [
     'ethereum==2.3.2',
@@ -16,9 +16,9 @@ required_packages = [
     'termcolor==1.1.0',
     'yaspin==0.14.0']
 
-if platform.system() == 'Darwin':  # osx
+if platform.system() is 'Darwin':  # osx
     required_packages.append('pyobjc==5.1.1')
-elif platform.system() == 'Windows':
+elif platform.system() is 'Windows':
     required_packages.append('comtypes==1.1.7')
 
 setup(
