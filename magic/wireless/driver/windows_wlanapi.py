@@ -71,10 +71,10 @@ if platform.system() is 'Windows':
             return self.wifi.get_interface(interface)
 
 
-    """
-    Some types does not exist in python2 ctypes.wintypes so we fake them
-    using how its defined in python3 ctypes.wintypes.
-    """
+    
+    # Some types does not exist in python2 ctypes.wintypes so we fake them
+    # using how its defined in python3 ctypes.wintypes.
+
     if "PDWORD" not in dir():
         PDWORD = POINTER(DWORD)
 
@@ -99,17 +99,17 @@ if platform.system() is 'Windows':
                             7: "authenticating"}
 
     WLAN_INTERFACE_STATE_VK = {v: k for k, v in
-                            WLAN_INTERFACE_STATE.items()}
+                               WLAN_INTERFACE_STATE.items()}
 
     AUTH_ALGORITHM = {1: "80211_OPEN",
-                    2: "80211_SHARED_KEY",
-                    3: "WPA",
-                    4: "WPA_PSK",
-                    5: "WPA_NONE",
-                    6: "RSNA",
-                    7: "RSNA_PSK",
-                    0x80000000: "IHV_START",
-                    0xffffffff: "IHV_END"}
+                      2: "80211_SHARED_KEY",
+                      3: "WPA",
+                      4: "WPA_PSK",
+                      5: "WPA_NONE",
+                      6: "RSNA",
+                      7: "RSNA_PSK",
+                      0x80000000: "IHV_START",
+                      0xffffffff: "IHV_END"}
 
     CIPHER_ALGORITHM = {0x00: "NONE",
                         0x01: "WEP40",
@@ -152,7 +152,7 @@ if platform.system() is 'Windows':
     }
 
     WLAN_INTERFACE_OPCODES_VK = {v: k for k, v in
-                                WLAN_INTERFACE_OPCODES.items()}
+                                 WLAN_INTERFACE_OPCODES.items()}
 
 
     class WLAN_INTERFACE_INFO(Structure):
@@ -364,7 +364,7 @@ if platform.system() is 'Windows':
     }
 
 
-    class WiFi(object):
+    class WiFi():
         _interfaces = pointer(WLAN_INTERFACE_INFO_LIST())
         _interface = POINTER(WLAN_INTERFACE_INFO)
         _handle = None
@@ -375,7 +375,7 @@ if platform.system() is 'Windows':
 
             if self._interfaces.contents.dwNumberOfItems > 0:
                 interfaces = cast(self._interfaces.contents.InterfaceInfo,
-                                POINTER(WLAN_INTERFACE_INFO))
+                                  POINTER(WLAN_INTERFACE_INFO))
                 # set the default one if none are connected
                 self._interface = interfaces[0]
                 for i in range(0, self._interfaces.contents.dwNumberOfItems):
@@ -408,7 +408,7 @@ if platform.system() is 'Windows':
             if interface is None:
                 return self._interface
             interfaces = cast(self._interfaces.contents.InterfaceInfo,
-                            POINTER(WLAN_INTERFACE_INFO))
+                              POINTER(WLAN_INTERFACE_INFO))
             for i in range(0, self._interfaces.contents.dwNumberOfItems):
                 if interfaces[i].strInterfaceDescription == interface:
                     return self._make_interface(interfaces[i])
@@ -458,7 +458,7 @@ if platform.system() is 'Windows':
                         networks[i].dot11Ssid,
                         networks[i].bSecurityEnabled)
                     bsses = cast(bss_list.contents.wlanBssEntries,
-                                POINTER(WLAN_BSS_ENTRY))
+                                 POINTER(WLAN_BSS_ENTRY))
 
                     if networks[i].bSecurityEnabled:
                         akm = CIPHER_ALGORITHM[networks[i].dot11DefaultCipherAlgorithm]
@@ -581,12 +581,12 @@ if platform.system() is 'Windows':
                 access = DWORD()
                 xml = LPWSTR()
                 self._wlan_get_profile(self._handle, self._interface.InterfaceGuid,
-                                    profile_name, pointer(xml), pointer(flags),
-                                    pointer(access))
+                                       profile_name, pointer(xml), pointer(flags),
+                                       pointer(access))
                 # fill profile info
                 profile.ssid = re.search(r'<name>(.*)</name>', xml.value).group(1)
                 profile.auth = re.search(r'<authentication>(.*)</authentication>',
-                                        xml.value).group(1).upper()
+                                         xml.value).group(1).upper()
 
                 profile_list.append(profile)
 

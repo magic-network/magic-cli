@@ -128,7 +128,7 @@ if platform.system() == 'Darwin':  # osx
             return self.wifi.get_interface()
 
 
-    class WiFi(object):
+    class WiFi():
         def __init__(self):
             self.wifi = CWInterface.interfaceNames()
             for iname in self.wifi:

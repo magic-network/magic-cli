@@ -78,7 +78,7 @@ class LinuxNmcli(WirelessDriver):
         return self.wifi.get_interface()
 
 
-class WiFi(object):
+class WiFi():
     def __init__(self):
         pass
 
