@@ -17,5 +17,5 @@ install:
   - pip3 install pylint
   - pip3 install .
 script: 
-  - pylint -rn --errors-only ./magic
+  - pylint -rn ./magic
   - pytest
