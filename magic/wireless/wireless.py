@@ -17,7 +17,7 @@ class Wireless:
         elif self._driver_name == 'nmcli':
             from magic.wireless.driver.linux_nmcli import LinuxNmcli
             self._driver = LinuxNmcli()
-        elif self._driver_name == 'windows':
+        elif self._driver_name == 'wlanapi':
             from magic.wireless.driver.windows_wlanapi import WindowsNetworkSetup
             self._driver = WindowsNetworkSetup()
 
@@ -31,7 +31,7 @@ class Wireless:
         # Windows
         # do this first because which doesn't exist for windows cmd
         if platform.system() == 'Windows':
-            return 'windows'
+            return 'wlanapi'
         # MacOS
         response = cmd('which networksetup')
         if len(response.stdout) > 0 and 'not found' not in response.stdout:
