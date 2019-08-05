@@ -1,6 +1,8 @@
 from os import remove
-from jinja2 import Environment, FileSystemLoader
 import getpass
+
+#pylint: disable=import-error
+from jinja2 import Environment, FileSystemLoader
 import objc
 
 from magic.definitions import RESOURCES_PATH, MAGIC_SSID_PREFIX
@@ -8,6 +10,7 @@ from magic.wireless.wireless_driver import WirelessDriver
 from magic.util.cmd import cmd
 from magic.util.prompt import get_prompt
 from magic.util.log import log
+
 
 # noinspection PyUnresolvedReferences
 objc.loadBundle('CoreWLAN',
@@ -28,13 +31,12 @@ class MacOSNetworksetup(WirelessDriver):
     def has_8021x_creds(self, ssid, address, signature):
         mobileconfig_name = self.get_mobileconfig_name(ssid, address)
         command = '''profiles -Lv | grep "name: %s" -4 | awk -F": " "/attribute: profileIdentifier/{print $NF}" ''' % \
-                  mobileconfig_name
+                mobileconfig_name
         response = cmd(command)
 
         if not response.stdout:
             return False
-        else:
-            return True
+        return True
 
     def install_8021x_creds(self, ssid, address, signature, timestamp):
         template_env = Environment(loader=FileSystemLoader(RESOURCES_PATH))
@@ -82,19 +84,15 @@ class MacOSNetworksetup(WirelessDriver):
         # Remove generated mobileconfig
         remove("%s/%s" % (RESOURCES_PATH, mobileconfig_filename))
 
-        if not response.returncode == 0:
+        if response.returncode != 0:
             log("An error occured: %s" % response.stdout, "red")
             return False
 
     # Connect to a network by SSID
     def connect(self, ssid):
-        networks, error = self.wifi.interface.scanForNetworksWithName_error_(
-            ssid, None)
+        networks, error = self.wifi.interface.scanForNetworksWithName_error_(ssid, None)
         network = networks.anyObject()
-        success, error = self.wifi.interface.associateToEnterpriseNetwork_identity_username_password_error_(network,
-                                                                                                            None,
-                                                                                                            None, None,
-                                                                                                            None)
+        success, error = self.wifi.interface.associateToEnterpriseNetwork_identity_username_password_error_(network, None, None, None, None)
         return success
 
     # Return current SSID
@@ -105,12 +103,10 @@ class MacOSNetworksetup(WirelessDriver):
     def scan_networks(self, scan_interval):
         ssids = []
         try:
-            scan_results = self.wifi.interface.scanForNetworksWithName_includeHidden_error_(
-                None, True, None)
+            scan_results = self.wifi.interface.scanForNetworksWithName_includeHidden_error_(None, True, None)
         except AttributeError:
             # The includeHidden parameter is only available on OSX 10.13+
-            scan_results = self.wifi.interface.scanForNetworksWithName_error_(
-                None, None)
+            scan_results = self.wifi.interface.scanForNetworksWithName_error_(None, None)
 
         for network in scan_results[0]:
             ssid = network.ssid()
@@ -127,11 +123,13 @@ class MacOSNetworksetup(WirelessDriver):
         return self.wifi.get_interface()
 
 
-class WiFi(object):
+class WiFi():
+    #pylint: disable=undefined-variable
     def __init__(self):
         self.wifi = CWInterface.interfaceNames()
         for iname in self.wifi:
             self.interface = CWInterface.interfaceWithName_(iname)
+    #pylint: enable=undefined-variable
 
     def get_wifistatus(self):
         if self.interface.powerOn() == 1:

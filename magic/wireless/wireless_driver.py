@@ -5,11 +5,11 @@ class WirelessDriver:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def has_8021x_creds(self, ssid, username, password):
+    def has_8021x_creds(self, ssid, address, signature):
         pass
 
     @abstractmethod
-    def install_8021x_creds(self, ssid, username, password, timestamp):
+    def install_8021x_creds(self, ssid, address, signature, timestamp):
         pass
 
     @abstractmethod
@@ -21,10 +21,9 @@ class WirelessDriver:
         pass
 
     @abstractmethod
-    def scan_networks(self):
+    def scan_networks(self, scan_interval):
         pass
 
     @abstractmethod
     def interface(self, interface=None):
         pass
-

@@ -1,6 +1,6 @@
+import platform
 from magic.util.log import log
 from magic.util.cmd import cmd
-import platform
 
 
 class Wireless:
@@ -17,7 +17,10 @@ class Wireless:
         elif self._driver_name == 'nmcli':
             from magic.wireless.driver.linux_nmcli import LinuxNmcli
             self._driver = LinuxNmcli()
-        elif self._driver_name == 'windows':
+        elif self._driver_name == 'wpacli':
+            from magic.wireless.driver.linux_wpacli import LinuxWPAcli
+            self._driver = LinuxWPAcli()
+        elif self._driver_name == 'wlanapi':
             from magic.wireless.driver.windows_wlanapi import WindowsNetworkSetup
             self._driver = WindowsNetworkSetup()
 
@@ -31,15 +34,19 @@ class Wireless:
         # Windows
         # do this first because which doesn't exist for windows cmd
         if platform.system() == 'Windows':
-            return 'windows'
+            return 'wlanapi'
         # MacOS
         response = cmd('which networksetup')
-        if len(response.stdout) > 0 and 'not found' not in response.stdout:
+        if response.stdout and 'not found' not in response.stdout:
             return 'networksetup'
         # Linux
         response = cmd('which nmcli')
-        if len(response.stdout) > 0 and 'not found' not in response.stdout:
+        if response.stdout and 'not found' not in response.stdout:
             return 'nmcli'
+
+        response = cmd('which wpa_cli')
+        if response.stdout and 'not found' not in response.stdout:
+            return 'wpacli'
         raise Exception('Unable to find compatible wireless driver.')
 
     # Check for existence of 8021x creds instalsled already

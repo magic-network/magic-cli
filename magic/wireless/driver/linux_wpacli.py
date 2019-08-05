@@ -9,7 +9,7 @@ from magic.util.prompt import get_prompt
 from magic.util.log import log
 
 
-class LinuxNmcli(WirelessDriver):
+class LinuxWPAcli(WirelessDriver):
     _interface = None
 
     def __init__(self):
@@ -18,32 +18,31 @@ class LinuxNmcli(WirelessDriver):
     @staticmethod
     def get_mobileconfig_name(ssid, username):
         return ssid
-        # return "%s-%s" % (ssid, username)
 
     def has_8021x_creds(self, ssid, address, signature):
-        mobileconfig_name = self.get_mobileconfig_name(ssid, address)
-        interface = self.interface()
-        if not interface:
-            return None
-        response = cmd("nmcli -t -f 802-1x.eap conn show " + ssid)
-        has_config = False
+        response = cmd("wpa_cli -i wlan0 list_networks")
+        ssid = ""
         for line in response.stdout.splitlines():
-            line_field, line_value = line.split(":")
-            if line_field == "802-1x.eap" and line_value == "ttls":
-                has_config = True
-                break
-        return has_config
+            net_id, n_ssid, bssid, flags = line.split("\t")
+            if n_ssid == ssid:
+                return True
+        return False
 
     def install_8021x_creds(self, ssid, address, signature, timestamp):
         mobileconfig_name = self.get_mobileconfig_name(ssid, address)
-        response = cmd(
-            'nmcli con add type wifi ifname %s con-name %s ssid %s ipv4.method auto 802-1x.eap ttls 802-1x.phase2-auth pap 802-1x.identity %s 802-1x.password %s-%s 802-11-wireless-security.key-mgmt wpa-eap' %
-            (self.interface(),
-             mobileconfig_name,
-             ssid,
-             address,
-             timestamp,
-             signature))
+        network_id = cmd('wpa_cli -i wlan0 add_network')
+        cmd('wpa_cli -i wlan0 set_network {0} ssid \'"{1}"\''.format(network_id, ssid))
+        cmd('wpa_cli -i wlan0 set_network {0} key_mgmt "WPA-EAP"'.format(network_id))
+        cmd('wpa_cli -i wlan0 set_network {0} priority 1'.format(network_id))
+        cmd('wpa_cli -i wlan0 set_network {0} group "CCMP"'.format(network_id))
+        cmd('wpa_cli -i wlan0 set_network {0} eap "TTLS"'.format(network_id))
+        cmd('wpa_cli -i wlan0 set_network {0} ca_cert "/path/to/cert.pem"'.format(network_id))
+        cmd('wpa_cli -i wlan0 set_network {0} phase2 \'"auth=PAP"\''.format(network_id))
+        cmd('wpa_cli -i wlan0 identity {0} "{1}"'.format(network_id, address))
+        cmd('wpa_cli -i wlan0 password {0} "{1}"'.format(network_id, "{0}-{1}".format(timestamp, signature)))
+        response = cmd('wpa_cli -i wlan0 enable_network {0}'.format(network_id))
+        response = cmd('wpa_cli -i wlan0 save_config')
+
         if not response.returncode == 0:
             log("An error occured: %s" % response.stdout, "red")
             return False
@@ -83,56 +82,49 @@ class WiFi():
         pass
 
     def get_wifistatus(self):
-        response = cmd("nmcli radio wifi")
+        response = cmd("wpa_cli -i wlan0 status")
         if "enabled" in response.stdout:
             return "Yes"
         return "No"
 
     def get_ssid(self):
-        response = cmd("nmcli -t -f active,ssid dev wifi")
+        response = cmd("wpa_cli -i wlan0 status")
         ssid = ""
         for line in response.stdout.splitlines():
-            line_status, line_ssid = line.split(":")
-            if line_status == "yes":
-                ssid = line_ssid
+            line_key, line_val = line.split("=")
+            if line_key == "ssid":
+                return line_val
         return ssid
 
     def scan(self, ssid=None):
-        response = cmd("nmcli -t -f active,ssid dev wifi list")
+        cmd("wpa_cli -i wlan0 scan")
+        os.sleep(3)
+        response = cmd("wpa_cli -i wlan0 scan_results)
         ssids = []
         for line in response.stdout.splitlines():
-            line_status, line_ssid = line.split(":")
-            if ssid is None or ssid == line_ssid:
-                ssids.append(line_ssid)
+            bssid, freq, sig_str, flags, ssid = line.split("\t")
+            if ssid not None:
+                ssids.append(ssid)
         return ssids
 
     def associate(self, ssid):
-        response = cmd("nmcli con up %s" % ssid)
+        response = cmd("wpa_cli -i wlan0 reconfigure")
         if response.returncode != 0:
             log("An error occured: %s" % response.stdout, "red")
             return False
         return True
 
     def get_interface(self):
-        response = cmd("nmcli -t -f device,type dev")
-        interface = ""
-        for line in response.stdout.splitlines():
-            line_interface, line_type = line.split(":")
-            if line_type == "wifi":
-                interface = line_interface
-        return interface
+        return "wlan0"
 
     def get_hardwareaddress(self):
-        interface = self.get_interface()
-        if not interface:
-            return None
-        response = cmd("nmcli -t -f general.hwaddr dev show " + interface)
-        hwaddr = ""
+        response = cmd("wpa_cli -i wlan0 status")
+        hw_address = ""
         for line in response.stdout.splitlines():
-            line_field, line_hwaddr = line.split(":")
-            if line_field == "GENERAL.HWADDR":
-                hwaddr = line_hwaddr
-        return hwaddr
+            line_key, line_val = line.split("=")
+            if line_key == "address":
+                return line_val
+        return hw_address
 
     def get_aggregatenoise(self):
         # TODO
@@ -143,22 +135,16 @@ class WiFi():
         return None
 
     def get_bssid(self):
-        response = cmd("nmcli -t -f active,bssid dev wifi")
+        response = cmd("wpa_cli -i wlan0 status")
         bssid = ""
         for line in response.stdout.splitlines():
-            line_status, line_bssid = line.split(":")
-            if line_status == "yes":
-                bssid = line_bssid
+            line_key, line_val = line.split("=")
+            if line_key == "bssid":
+                return line_val
         return bssid
 
     def get_channel(self):
-        response = cmd("nmcli -t -f active,chan dev wifi")
-        chan = ""
-        for line in response.stdout.splitlines():
-            line_status, line_chan = line.split(":")
-            if line_status == "yes":
-                chan = line_chan
-        return chan
+        return None
 
     def get_transmitrate(self):
         # TODO

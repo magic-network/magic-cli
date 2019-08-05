@@ -13,31 +13,19 @@ class AccountManager:
         self.wireless = wireless
 
     def get_critical_info(self):
-        answers = get_prompt([
-            {
-                'type': 'list',
-                'name': 'onboard_account_choice',
-                'message': 'Ethereum Setup:',
-                'choices': [
-                    {
-                        "name": "Create a new test Ethereum account",
-                        "value": "new_account"
-                    },
-                    {
-                        "name": "Enter existing test account using your test private key.",
-                        "value": "existing_account"
-                    },
-                    {
-                        "name": "Exit Magic CLI",
-                        "value": "graceful_exit"
-                    }
-                ]
-            }, {
-                'type': 'password',
-                'name': 'eth_privkey',
-                'when': lambda answers: answers['onboard_account_choice'] == "existing_account",
-                'message': 'Enter private key'
-            }])
+        answers = get_prompt([{'type': 'list',
+                               'name': 'onboard_account_choice',
+                               'message': 'Ethereum Setup:',
+                               'choices': [{"name": "Create a new test Ethereum account",
+                                            "value": "new_account"},
+                                           {"name": "Enter existing test account using your test private key.",
+                                            "value": "existing_account"},
+                                           {"name": "Exit Magic CLI",
+                                            "value": "graceful_exit"}]},
+                              {'type': 'password',
+                               'name': 'eth_privkey',
+                               'when': lambda answers: answers['onboard_account_choice'] == "existing_account",
+                               'message': 'Enter private key'}])
 
         try:
 
@@ -62,7 +50,8 @@ class AccountManager:
             exit()
 
     def setup_8021x_creds(self, ssid):
-        has_creds = self.wireless.has_8021x_creds(ssid, self.address, self.privkey)
+        has_creds = self.wireless.has_8021x_creds(
+            ssid, self.address, self.privkey)
 
         if has_creds is False:
             log("No credentials found for magic, adding profile", 'yellow')

@@ -19,5 +19,6 @@ def log(string, color=DEFAULT_COLOR, font="slant", figlet=False):
     else:
         six.print_(string)
 
+
 def devlog(string):
     log("(DEV) %s" % string, "blue")

@@ -9,16 +9,17 @@
 #
 # LICENSE: Distributed under the terms of the MIT License
 import signal
+import sys
+
 import click
+from yaspin import yaspin
+
 from magic.daemon.network_monitor import NetworkMonitor
 from magic.account.account_manager import AccountManager
 from magic.network.network_manager import NetworkManager
 from magic.wireless.wireless import Wireless
-from magic.util.prompt import get_prompt, tryconvert
+from magic.util.prompt import get_prompt
 from magic.util.log import log
-from yaspin import yaspin
-
-import sys
 
 DEV = True
 
@@ -30,17 +31,17 @@ except ImportError:
     colorama = None
 
 
-class context:
+class Context:
     y = False
 
 
 def sighandler(signum, frame):
     if signum == signal.SIGTERM:
         log("Got SIGTERM. Shutting down.", "red")
-        context.y = True
+        Context.y = True
     elif signum == signal.SIGINT:
         log("Got SIGINT. Shutting down.", "red")
-        context.y = True
+        Context.y = True
     else:
         log("Signal %d not handled" % signum, "red")
 
@@ -68,22 +69,22 @@ def main():
 
     if DEV:
         # Scan for local networks
-        answers = get_prompt([ {
-                'type': 'input',
-                'name': 'wait_time',
-                'message': 'How many seconds to scan for magic networks?',
-                'default': '10'
+        answers = get_prompt([{
+            'type': 'input',
+            'name': 'wait_time',
+            'message': 'How many seconds to scan for magic networks?',
+            'default': '10'
         }])
 
         with yaspin():
             ssids = wireless.scan(int(answers['wait_time']))
-        
+
         network_manager.get_custom_network_ssid(ssids)
 
         if not ssids:
             log("Could not find any magic ssids!", "red")
             sys.exit(1)
-    
+
     # Make sure any profiles or wpa_supplicants are installed.
     account_manager.setup_8021x_creds(network_manager.ssid)
 
@@ -94,8 +95,8 @@ def main():
     signal.signal(signal.SIGINT, sighandler)
 
     # TODO: WIP connection monitor
-    # network_daemon.start()
-    # while not context.y: time.sleep(1)
+    network_daemon.start()
+    # while not Context.y: time.sleep(1)
 
 
 if __name__ == '__main__':
