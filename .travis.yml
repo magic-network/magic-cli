@@ -21,7 +21,7 @@ matrix:
         - python setup.py install
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
 install: 
-  - pip3 install pylint coveralls
+  - pip3 install pylint coveralls pytest
 script: 
   - pylint -rn --errors-only ./magic
   - coverage run --source magic -m pytest
