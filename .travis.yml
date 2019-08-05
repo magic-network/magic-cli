@@ -18,6 +18,6 @@ install:
   - pip3 install pylint coveralls
   - python3 setup.py install
 script: 
-  - pylint -rn ./magic
+  - pylint -rn --errors-only ./magic
   - coverage run --source magic -m py.test
   - coveralls

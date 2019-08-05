@@ -1,4 +1,8 @@
 # Magic CLI
+
+[![Build Status](https://travis-ci.org/magic-network/magic-cli.svg?branch=master)](https://travis-ci.org/magic-network/magic-cli)
+[![Coverage Status](https://coveralls.io/repos/github/magic-network/magic-cli/badge.svg?branch=feature/windows)](https://coveralls.io/github/magic-network/magic-cli?branch=feature/windows)
+
 The Magic CLI can be installed in 3 easy steps.
 
 ## Requirements
