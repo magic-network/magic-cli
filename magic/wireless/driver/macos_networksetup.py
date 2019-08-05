@@ -124,10 +124,12 @@ class MacOSNetworksetup(WirelessDriver):
 
 
 class WiFi():
+    #pylint: disable=undefined-variable
     def __init__(self):
         self.wifi = CWInterface.interfaceNames()
         for iname in self.wifi:
             self.interface = CWInterface.interfaceWithName_(iname)
+    #pylint: enable=undefined-variable
 
     def get_wifistatus(self):
         if self.interface.powerOn() == 1:
