@@ -99,7 +99,7 @@ class WiFi():
     def scan(self, ssid=None):
         cmd("wpa_cli -i wlan0 scan")
         os.sleep(3)
-        response = cmd("wpa_cli -i wlan0 scan_results)
+        response = cmd("wpa_cli -i wlan0 scan_results")
         ssids = []
         for line in response.stdout.splitlines():
             bssid, freq, sig_str, flags, ssid = line.split("\t")
