@@ -3,7 +3,6 @@ from setuptools import setup, find_packages
 
 required_packages = [
     'ethereum==2.3.2',
-    'pyethhash==0.1.27 @ https://github.com/polyswarm/ethash.git#egg=pyethash-0.1.27',
     'web3==4.9.2',
     'Click==7.0',
     'colorama==0.4.0',
@@ -42,6 +41,9 @@ setup(
     },
 
     install_requires=required_packages,
+    dependency_links=[
+        'git+https://github.com/polyswarm/ethash.git#egg=pyethash-0.1.27'
+    ],
     python_requires='>=3.6,<4',
     classifiers=[
         'Development Status :: 1 - Beta',
