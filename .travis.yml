@@ -14,8 +14,9 @@ matrix:
       before_install: choco install python
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
 install: 
-  - pip3 install pylint
+  - pip3 install pylint coveralls
   - pip3 install .
 script: 
   - pylint -rn ./magic
-  - pytest
+  - coverage run --source magic -m py.test
+  - coveralls
