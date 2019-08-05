@@ -95,7 +95,7 @@ def main():
     signal.signal(signal.SIGINT, sighandler)
 
     # TODO: WIP connection monitor
-    # network_daemon.start()
+    network_daemon.start()
     # while not Context.y: time.sleep(1)
 
 
