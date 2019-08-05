@@ -17,6 +17,9 @@ class Wireless:
         elif self._driver_name == 'nmcli':
             from magic.wireless.driver.linux_nmcli import LinuxNmcli
             self._driver = LinuxNmcli()
+        elif self._driver_name == 'wpacli':
+            from magic.wireless.driver.linux_wpacli import LinuxWPAcli
+            self._driver = LinuxWPAcli()
         elif self._driver_name == 'wlanapi':
             from magic.wireless.driver.windows_wlanapi import WindowsNetworkSetup
             self._driver = WindowsNetworkSetup()
@@ -40,6 +43,10 @@ class Wireless:
         response = cmd('which nmcli')
         if response.stdout and 'not found' not in response.stdout:
             return 'nmcli'
+
+        response = cmd('which wpa_cli')
+        if response.stdout and 'not found' not in response.stdout:
+            return 'wpacli'
         raise Exception('Unable to find compatible wireless driver.')
 
     # Check for existence of 8021x creds instalsled already
