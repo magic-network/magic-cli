@@ -25,21 +25,19 @@ setup(
     name='magic-cli',
     author="Magic Foundation",
     author_email="hello@magic.co",
-    version='0.1.0',
+    version=open('version.txt').read().split()[0],
     description="Command Line Interface (CLI) for connecting to the Magic Network",
     long_description_markdown_filename='README.md',
     license="MIT",
     keywords="magic cli hologram",
     url="https://magic.co",
     packages=find_packages(),
-    package_data={'magic': ['resources/*']},
-
+    include_package_data=True,
     entry_points={
         'console_scripts': [
             'magic-cli=magic.__main__:main'
         ]
     },
-
     install_requires=required_packages,
     dependency_links=[
         'git+https://github.com/polyswarm/ethash.git#egg=pyethash-0.1.27'
@@ -50,9 +48,6 @@ setup(
         'Intended Audience :: End Users/Desktop',
         'License :: MIT License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7'
     ]
