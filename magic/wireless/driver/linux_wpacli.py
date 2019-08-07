@@ -38,7 +38,7 @@ class LinuxWPAcli(WirelessDriver):
             self.validate_response(cmd('wpa_cli -i wlan0 set_network {0} priority 1'.format(network_id)))
             self.validate_response(cmd('wpa_cli -i wlan0 set_network {0} group "CCMP"'.format(network_id)))
             self.validate_response(cmd('wpa_cli -i wlan0 set_network {0} eap "TTLS"'.format(network_id)))
-            self.validate_response(cmd('wpa_cli -i wlan0 set_network {0} ca_cert "{1}"'.format(network_id, cert_path)))
+            self.validate_response(cmd('wpa_cli -i wlan0 set_network {0} ca_cert \'"{1}"\''.format(network_id, cert_path)))
             self.validate_response(cmd('wpa_cli -i wlan0 set_network {0} phase2 \'"auth=PAP"\''.format(network_id)))
             self.validate_response(cmd('wpa_cli -i wlan0 identity {0} "{1}"'.format(network_id, address)))
             self.validate_response(cmd('wpa_cli -i wlan0 password {0} "{1}"'.format(network_id, "{0}-{1}".format(timestamp, signature))))
