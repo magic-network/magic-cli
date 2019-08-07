@@ -1,4 +1,5 @@
 import os
+import time
 from jinja2 import Environment, FileSystemLoader
 import getpass
 
@@ -103,12 +104,12 @@ class WiFi():
 
     def scan(self, ssid=None):
         cmd("wpa_cli -i wlan0 scan")
-        os.sleep(3)
-        response = cmd("wpa_cli -i wlan0 scan_results)
+        time.sleep(3)
+        response = cmd("wpa_cli -i wlan0 scan_results")
         ssids = []
         for line in response.stdout.splitlines()[1:]:
             bssid, freq, sig_str, flags, ssid = line.split("\t")
-            if ssid not None:
+            if ssid is not None:
                 ssids.append(ssid)
         return ssids
 
