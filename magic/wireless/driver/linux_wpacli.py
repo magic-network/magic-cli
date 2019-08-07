@@ -1,4 +1,4 @@
-from os import remove
+import os
 from jinja2 import Environment, FileSystemLoader
 import getpass
 
@@ -22,31 +22,34 @@ class LinuxWPAcli(WirelessDriver):
     def has_8021x_creds(self, ssid, address, signature):
         response = cmd("wpa_cli -i wlan0 list_networks")
         ssid = ""
-        for line in response.stdout.splitlines():
+        for line in response.stdout.splitlines()[1:]:
             net_id, n_ssid, bssid, flags = line.split("\t")
             if n_ssid == ssid:
                 return True
         return False
 
     def install_8021x_creds(self, ssid, address, signature, timestamp):
-        mobileconfig_name = self.get_mobileconfig_name(ssid, address)
-        network_id = cmd('wpa_cli -i wlan0 add_network')
-        cmd('wpa_cli -i wlan0 set_network {0} ssid \'"{1}"\''.format(network_id, ssid))
-        cmd('wpa_cli -i wlan0 set_network {0} key_mgmt "WPA-EAP"'.format(network_id))
-        cmd('wpa_cli -i wlan0 set_network {0} priority 1'.format(network_id))
-        cmd('wpa_cli -i wlan0 set_network {0} group "CCMP"'.format(network_id))
-        cmd('wpa_cli -i wlan0 set_network {0} eap "TTLS"'.format(network_id))
-        cmd('wpa_cli -i wlan0 set_network {0} ca_cert "/path/to/cert.pem"'.format(network_id))
-        cmd('wpa_cli -i wlan0 set_network {0} phase2 \'"auth=PAP"\''.format(network_id))
-        cmd('wpa_cli -i wlan0 identity {0} "{1}"'.format(network_id, address))
-        cmd('wpa_cli -i wlan0 password {0} "{1}"'.format(network_id, "{0}-{1}".format(timestamp, signature)))
-        response = cmd('wpa_cli -i wlan0 enable_network {0}'.format(network_id))
-        response = cmd('wpa_cli -i wlan0 save_config')
-
-        if not response.returncode == 0:
-            log("An error occured: %s" % response.stdout, "red")
+        try:
+            network_id = cmd('wpa_cli -i wlan0 add_network').stdout.strip(' \n\t\r')
+            cert_path = os.path.dirname(os.path.realpath(__file__)) + "/../../resources/certs/server.pem"
+            self.validate_response(cmd('wpa_cli -i wlan0 set_network {0} ssid \'"{1}"\''.format(network_id, ssid)))
+            self.validate_response(cmd('wpa_cli -i wlan0 set_network {0} key_mgmt "WPA-EAP"'.format(network_id)))
+            self.validate_response(cmd('wpa_cli -i wlan0 set_network {0} priority 1'.format(network_id)))
+            self.validate_response(cmd('wpa_cli -i wlan0 set_network {0} group "CCMP"'.format(network_id)))
+            self.validate_response(cmd('wpa_cli -i wlan0 set_network {0} eap "TTLS"'.format(network_id)))
+            self.validate_response(cmd('wpa_cli -i wlan0 set_network {0} ca_cert "{1}"'.format(network_id, cert_path)))
+            self.validate_response(cmd('wpa_cli -i wlan0 set_network {0} phase2 \'"auth=PAP"\''.format(network_id)))
+            self.validate_response(cmd('wpa_cli -i wlan0 identity {0} "{1}"'.format(network_id, address)))
+            self.validate_response(cmd('wpa_cli -i wlan0 password {0} "{1}"'.format(network_id, "{0}-{1}".format(timestamp, signature))))
+            self.validate_response(cmd('wpa_cli -i wlan0 enable_network {0}'.format(network_id)))
+            self.validate_response(cmd('wpa_cli -i wlan0 save_config'))
+        except Exception:
             return False
         return True
+
+    def validate_response(self, response):
+        if "OK" not in response.stdout:
+            raise Exception('wpa_cli command failed')
 
     # Connect to a network by SSID
     def connect(self, ssid):
@@ -83,9 +86,11 @@ class WiFi():
 
     def get_wifistatus(self):
         response = cmd("wpa_cli -i wlan0 status")
-        if "enabled" in response.stdout:
-            return "Yes"
-        return "No"
+        for line in response.stdout.splitlines():
+            line_key, line_val = line.split("=")
+            if line_key == "wpa_state":
+                return line_val is not "INACTIVE"
+        return False
 
     def get_ssid(self):
         response = cmd("wpa_cli -i wlan0 status")
@@ -101,7 +106,7 @@ class WiFi():
         os.sleep(3)
         response = cmd("wpa_cli -i wlan0 scan_results)
         ssids = []
-        for line in response.stdout.splitlines():
+        for line in response.stdout.splitlines()[1:]:
             bssid, freq, sig_str, flags, ssid = line.split("\t")
             if ssid not None:
                 ssids.append(ssid)
