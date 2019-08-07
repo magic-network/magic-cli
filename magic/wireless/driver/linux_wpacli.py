@@ -1,4 +1,5 @@
 from os import remove
+import time
 from jinja2 import Environment, FileSystemLoader
 import getpass
 
@@ -22,7 +23,7 @@ class LinuxWPAcli(WirelessDriver):
     def has_8021x_creds(self, ssid, address, signature):
         response = cmd("wpa_cli -i wlan0 list_networks")
         ssid = ""
-        for line in response.stdout.splitlines():
+        for line in response.stdout.splitlines()[1:]:
             net_id, n_ssid, bssid, flags = line.split("\t")
             if n_ssid == ssid:
                 return True
@@ -40,7 +41,7 @@ class LinuxWPAcli(WirelessDriver):
         cmd('wpa_cli -i wlan0 set_network {0} phase2 \'"auth=PAP"\''.format(network_id))
         cmd('wpa_cli -i wlan0 identity {0} "{1}"'.format(network_id, address))
         cmd('wpa_cli -i wlan0 password {0} "{1}"'.format(network_id, "{0}-{1}".format(timestamp, signature)))
-        response = cmd('wpa_cli -i wlan0 enable_network {0}'.format(network_id))
+        cmd('wpa_cli -i wlan0 enable_network {0}'.format(network_id))
         response = cmd('wpa_cli -i wlan0 save_config')
 
         if not response.returncode == 0:
@@ -98,12 +99,12 @@ class WiFi():
 
     def scan(self, ssid=None):
         cmd("wpa_cli -i wlan0 scan")
-        os.sleep(3)
-        response = cmd("wpa_cli -i wlan0 scan_results)
+        time.sleep(3)
+        response = cmd("wpa_cli -i wlan0 scan_results")
         ssids = []
-        for line in response.stdout.splitlines():
+        for line in response.stdout.splitlines()[1:]:
             bssid, freq, sig_str, flags, ssid = line.split("\t")
-            if ssid not None:
+            if ssid is not None:
                 ssids.append(ssid)
         return ssids
 
