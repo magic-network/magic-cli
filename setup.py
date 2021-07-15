@@ -7,7 +7,7 @@ required_packages = [
     'Click==7.0',
     'colorama==0.4.0',
     'future==0.17.1',
-    'Jinja2==2.10.1',
+    'Jinja2==2.11.3',
     'prompt-toolkit==1.0.14',
     'pyfiglet==0.7.5',
     'Pygments==2.7.4',
