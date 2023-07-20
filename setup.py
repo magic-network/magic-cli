@@ -10,7 +10,7 @@ required_packages = [
     'Jinja2==2.11.3',
     'prompt-toolkit==1.0.14',
     'pyfiglet==0.7.5',
-    'Pygments==2.7.4',
+    'Pygments==2.15.0',
     'PyInquirer==1.0.3',
     'six==1.11.0',
     'termcolor==1.1.0',
